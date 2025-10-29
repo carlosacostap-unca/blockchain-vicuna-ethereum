@@ -30,6 +30,12 @@ export default function Home() {
   const [editingProducto, setEditingProducto] = useState<ProductoWithRelations | undefined>(undefined)
   const [viewingProducto, setViewingProducto] = useState<ProductoWithRelations | undefined>(undefined)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [nftSearchValue, setNftSearchValue] = useState('')
+
+  const handleViewNFTGallery = () => {
+    // Navegar a la galería pública de NFTs
+    window.open('/galeria', '_blank');
+  };
 
   const handleSectionChange = (section: SectionType) => {
     setCurrentSection(section)
@@ -184,6 +190,35 @@ export default function Home() {
               <p className="text-gray-600 mt-1">
                 Administración de Artesanos, Cooperativas, Chakus, COLT, CTPSFS y Productos
               </p>
+            </div>
+            
+            {/* NFT Links and Search */}
+            <div className="flex flex-col gap-4">
+              {/* NFT Gallery Button */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleViewNFTGallery}
+                  className="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  🖼️ Ver Galería NFT
+                </button>
+              </div>
+              
+              {/* NFT Links */}
+              <div className="flex gap-3">
+                <a
+                  href="/mint"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  🧶 Mintear NFT
+                </a>
+                <a
+                  href="/mis-nfts"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  🏛️ Mis NFTs
+                </a>
+              </div>
             </div>
             
             {/* Navigation Tabs */}
