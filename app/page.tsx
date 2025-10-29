@@ -1,65 +1,445 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import ArtesanoForm from '@/components/ArtesanoForm'
+import ArtesanosList from '@/components/ArtesanosList'
+import CooperativaForm from '@/components/CooperativaForm'
+import CooperativasList from '@/components/CooperativasList'
+import ChakuForm from '@/components/ChakuForm'
+import ChakusList from '@/components/ChakusList'
+import COLTForm from '@/components/COLTForm'
+import COLTList from '@/components/COLTList'
+import CTPSFSForm from '@/components/CTPSFSForm'
+import CTPSFSList from '@/components/CTPSFSList'
+import ProductoForm from '@/components/ProductoForm'
+import ProductosList from '@/components/ProductosList'
+import ProductoDetalle from '@/components/ProductoDetalle'
+import { type Artesano, type Cooperativa, type Chaku, type COLTWithRelations, type CTPSFSWithRelations, type ProductoWithRelations } from '@/lib/supabase'
+
+type ViewType = 'artesanos-list' | 'artesanos-form' | 'cooperativas-list' | 'cooperativas-form' | 'chakus-list' | 'chakus-form' | 'colt-list' | 'colt-form' | 'ctpsfs-list' | 'ctpsfs-form' | 'productos-list' | 'productos-form' | 'productos-detalle'
+type SectionType = 'artesanos' | 'cooperativas' | 'chakus' | 'colt' | 'ctpsfs' | 'productos'
 
 export default function Home() {
+  const [currentSection, setCurrentSection] = useState<SectionType>('artesanos')
+  const [currentView, setCurrentView] = useState<ViewType>('artesanos-list')
+  const [editingArtesano, setEditingArtesano] = useState<Artesano | undefined>(undefined)
+  const [editingCooperativa, setEditingCooperativa] = useState<Cooperativa | undefined>(undefined)
+  const [editingChaku, setEditingChaku] = useState<Chaku | undefined>(undefined)
+  const [editingCOLT, setEditingCOLT] = useState<COLTWithRelations | undefined>(undefined)
+  const [editingCTPSFS, setEditingCTPSFS] = useState<CTPSFSWithRelations | undefined>(undefined)
+  const [editingProducto, setEditingProducto] = useState<ProductoWithRelations | undefined>(undefined)
+  const [viewingProducto, setViewingProducto] = useState<ProductoWithRelations | undefined>(undefined)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
+
+  const handleSectionChange = (section: SectionType) => {
+    setCurrentSection(section)
+    if (section === 'artesanos') {
+      setCurrentView('artesanos-list')
+    } else if (section === 'cooperativas') {
+      setCurrentView('cooperativas-list')
+    } else if (section === 'chakus') {
+      setCurrentView('chakus-list')
+    } else if (section === 'colt') {
+      setCurrentView('colt-list')
+    } else if (section === 'productos') {
+      setCurrentView('productos-list')
+    } else {
+      setCurrentView('ctpsfs-list')
+    }
+    setEditingArtesano(undefined)
+    setEditingCooperativa(undefined)
+    setEditingChaku(undefined)
+    setEditingCOLT(undefined)
+    setEditingCTPSFS(undefined)
+    setEditingProducto(undefined)
+    setViewingProducto(undefined)
+  }
+
+  const handleNewArtesano = () => {
+    setEditingArtesano(undefined)
+    setCurrentView('artesanos-form')
+  }
+
+  const handleEditArtesano = (artesano: Artesano) => {
+    setEditingArtesano(artesano)
+    setCurrentView('artesanos-form')
+  }
+
+  const handleNewCooperativa = () => {
+    setEditingCooperativa(undefined)
+    setCurrentView('cooperativas-form')
+  }
+
+  const handleEditCooperativa = (cooperativa: Cooperativa) => {
+    setEditingCooperativa(cooperativa)
+    setCurrentView('cooperativas-form')
+  }
+
+  const handleNewChaku = () => {
+    setEditingChaku(undefined)
+    setCurrentView('chakus-form')
+  }
+
+  const handleEditChaku = (chaku: Chaku) => {
+    setEditingChaku(chaku)
+    setCurrentView('chakus-form')
+  }
+
+  const handleNewCOLT = () => {
+    setEditingCOLT(undefined)
+    setCurrentView('colt-form')
+  }
+
+  const handleEditCOLT = (colt: COLTWithRelations) => {
+    setEditingCOLT(colt)
+    setCurrentView('colt-form')
+  }
+
+  const handleNewCTPSFS = () => {
+    setEditingCTPSFS(undefined)
+    setCurrentView('ctpsfs-form')
+  }
+
+  const handleEditCTPSFS = (ctpsfs: CTPSFSWithRelations) => {
+    setEditingCTPSFS(ctpsfs)
+    setCurrentView('ctpsfs-form')
+  }
+
+  const handleNewProducto = () => {
+    setEditingProducto(undefined)
+    setCurrentView('productos-form')
+  }
+
+  const handleEditProducto = (producto: ProductoWithRelations) => {
+    setEditingProducto(producto)
+    setCurrentView('productos-form')
+  }
+
+  const handleViewProducto = (producto: ProductoWithRelations) => {
+    setViewingProducto(producto)
+    setCurrentView('productos-detalle')
+  }
+
+  const handleBackToProductsList = () => {
+    setViewingProducto(undefined)
+    setCurrentView('productos-list')
+  }
+
+  const handleFormSuccess = () => {
+    if (currentSection === 'artesanos') {
+      setCurrentView('artesanos-list')
+      setEditingArtesano(undefined)
+    } else if (currentSection === 'cooperativas') {
+      setCurrentView('cooperativas-list')
+      setEditingCooperativa(undefined)
+    } else if (currentSection === 'chakus') {
+      setCurrentView('chakus-list')
+      setEditingChaku(undefined)
+    } else if (currentSection === 'colt') {
+      setCurrentView('colt-list')
+      setEditingCOLT(undefined)
+    } else if (currentSection === 'productos') {
+      setCurrentView('productos-list')
+      setEditingProducto(undefined)
+      setViewingProducto(undefined)
+    } else {
+      setCurrentView('ctpsfs-list')
+      setEditingCTPSFS(undefined)
+    }
+    setRefreshTrigger(prev => prev + 1)
+  }
+
+  const handleFormCancel = () => {
+    if (currentSection === 'artesanos') {
+      setCurrentView('artesanos-list')
+      setEditingArtesano(undefined)
+    } else if (currentSection === 'cooperativas') {
+      setCurrentView('cooperativas-list')
+      setEditingCooperativa(undefined)
+    } else if (currentSection === 'chakus') {
+      setCurrentView('chakus-list')
+      setEditingChaku(undefined)
+    } else if (currentSection === 'colt') {
+      setCurrentView('colt-list')
+      setEditingCOLT(undefined)
+    } else if (currentSection === 'productos') {
+      setCurrentView('productos-list')
+      setEditingProducto(undefined)
+    } else {
+      setCurrentView('ctpsfs-list')
+      setEditingCTPSFS(undefined)
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Sistema de Gestión
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Administración de Artesanos, Cooperativas, Chakus, COLT, CTPSFS y Productos
+              </p>
+            </div>
+            
+            {/* Navigation Tabs */}
+            <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+              <button
+                onClick={() => handleSectionChange('artesanos')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  currentSection === 'artesanos'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Artesanos
+              </button>
+              
+              <button
+                onClick={() => handleSectionChange('cooperativas')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  currentSection === 'cooperativas'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Cooperativas
+              </button>
+              
+              <button
+                onClick={() => handleSectionChange('chakus')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  currentSection === 'chakus'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Chakus
+              </button>
+
+              <button
+                onClick={() => handleSectionChange('colt')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  currentSection === 'colt'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                COLT
+              </button>
+
+              <button
+                onClick={() => handleSectionChange('ctpsfs')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  currentSection === 'ctpsfs'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                CTPSFS
+              </button>
+
+              <button
+                onClick={() => handleSectionChange('productos')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  currentSection === 'productos'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Productos
+              </button>
+            </div>
+          </div>
+
+          {/* Section Controls */}
+          <div className="flex justify-between items-center pb-4 border-t pt-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              {currentSection === 'artesanos' 
+                ? 'Gestión de Artesanos' 
+                : currentSection === 'cooperativas'
+                  ? 'Gestión de Cooperativas'
+                  : currentSection === 'chakus' 
+                    ? 'Gestión de Chakus'
+                    : currentSection === 'colt'
+                      ? 'Gestión de COLT'
+                      : currentSection === 'productos'
+                        ? 'Gestión de Productos'
+                        : 'Gestión de CTPSFS'
+              }
+            </h2>
+            
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  if (currentSection === 'artesanos') {
+                    setCurrentView('artesanos-list')
+                  } else if (currentSection === 'cooperativas') {
+                    setCurrentView('cooperativas-list')
+                  } else if (currentSection === 'chakus') {
+                    setCurrentView('chakus-list')
+                  } else if (currentSection === 'colt') {
+                    setCurrentView('colt-list')
+                  } else if (currentSection === 'productos') {
+                    setCurrentView('productos-list')
+                    setViewingProducto(undefined)
+                  } else {
+                    setCurrentView('ctpsfs-list')
+                  }
+                }}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  (currentView === 'artesanos-list' || currentView === 'cooperativas-list' || currentView === 'chakus-list' || currentView === 'colt-list' || currentView === 'ctpsfs-list' || currentView === 'productos-list')
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Ver Lista
+              </button>
+              
+              <button
+                onClick={() => {
+                  if (currentSection === 'artesanos') {
+                    handleNewArtesano()
+                  } else if (currentSection === 'cooperativas') {
+                    handleNewCooperativa()
+                  } else if (currentSection === 'chakus') {
+                    handleNewChaku()
+                  } else if (currentSection === 'colt') {
+                    handleNewCOLT()
+                  } else if (currentSection === 'productos') {
+                    handleNewProducto()
+                  } else {
+                    handleNewCTPSFS()
+                  }
+                }}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  (currentView === 'artesanos-form' || currentView === 'cooperativas-form' || currentView === 'chakus-form' || currentView === 'colt-form' || currentView === 'ctpsfs-form' || currentView === 'productos-form')
+                    ? 'bg-green-600 text-white'
+                    : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
+              >
+                + Nuevo {currentSection === 'artesanos' ? 'Artesano' : currentSection === 'cooperativas' ? 'Cooperativa' : currentSection === 'chakus' ? 'Chaku' : currentSection === 'colt' ? 'COLT' : currentSection === 'productos' ? 'Producto' : 'CTPSFS'}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {currentView === 'artesanos-list' && (
+          <ArtesanosList 
+            onEdit={handleEditArtesano}
+            refreshTrigger={refreshTrigger}
+          />
+        )}
+        
+        {currentView === 'artesanos-form' && (
+          <ArtesanoForm
+            artesano={editingArtesano}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        )}
+
+        {currentView === 'cooperativas-list' && (
+          <CooperativasList 
+            onEdit={handleEditCooperativa}
+            refreshTrigger={refreshTrigger}
+          />
+        )}
+        
+        {currentView === 'cooperativas-form' && (
+          <CooperativaForm
+            cooperativa={editingCooperativa}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        )}
+
+        {currentView === 'chakus-list' && (
+          <ChakusList 
+            onEdit={handleEditChaku}
+          />
+        )}
+        
+        {currentView === 'chakus-form' && (
+          <ChakuForm
+            chaku={editingChaku}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        )}
+
+        {currentView === 'colt-list' && (
+          <COLTList 
+            onEdit={handleEditCOLT}
+            onNew={handleNewCOLT}
+          />
+        )}
+        
+        {currentView === 'colt-form' && (
+          <COLTForm
+            colt={editingCOLT}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        )}
+
+        {currentView === 'ctpsfs-list' && (
+          <CTPSFSList 
+            onEdit={handleEditCTPSFS}
+            onNew={handleNewCTPSFS}
+            refreshTrigger={refreshTrigger}
+          />
+        )}
+        
+        {currentView === 'ctpsfs-form' && (
+          <CTPSFSForm
+            ctpsfs={editingCTPSFS}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        )}
+
+        {currentView === 'productos-list' && (
+          <ProductosList 
+            onEdit={handleEditProducto}
+            onNew={handleNewProducto}
+            onView={handleViewProducto}
+            refreshTrigger={refreshTrigger}
+          />
+        )}
+        
+        {currentView === 'productos-form' && (
+          <ProductoForm
+            producto={editingProducto}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        )}
+
+        {currentView === 'productos-detalle' && viewingProducto && (
+          <ProductoDetalle
+            producto={viewingProducto}
+            onBack={handleBackToProductsList}
+            onEdit={handleEditProducto}
+          />
+        )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center text-gray-500 text-sm">
+            <p>Sistema de Gestión de Artesanos, Chakus, COLT, CTPSFS y Productos</p>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }
