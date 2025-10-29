@@ -1,6 +1,6 @@
 # Guía de Despliegue en Vercel
 
-Este documento proporciona instrucciones paso a paso para desplegar el proyecto blockchain-vicuna-etherium en Vercel.
+Este documento proporciona instrucciones paso a paso para desplegar el proyecto blockchain-vicuna-ethereum en Vercel.
 
 ## Prerrequisitos
 
@@ -14,7 +14,7 @@ Este documento proporciona instrucciones paso a paso para desplegar el proyecto 
 
 1. Ir a [vercel.com](https://vercel.com) e iniciar sesión
 2. Hacer clic en "New Project"
-3. Importar el repositorio: `https://github.com/carlosacostap-unca/blockchain-vicuna-etherium`
+3. Importar el repositorio: `https://github.com/carlosacostap-unca/blockchain-vicuna-ethereum`
 4. Vercel detectará automáticamente que es un proyecto Next.js
 
 ### 2. Configurar Variables de Entorno

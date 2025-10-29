@@ -105,7 +105,7 @@ interface CTPSFS {
   numero: string
   descripcion_producto: string
   chaku_id: number | null
-  año: number
+  ano: number
   documentacion_origen: string
   created_at: string
   updated_at: string

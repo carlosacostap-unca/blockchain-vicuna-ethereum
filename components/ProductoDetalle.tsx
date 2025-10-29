@@ -229,7 +229,7 @@ export default function ProductoDetalle({ producto, onBack, onEdit }: ProductoDe
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-600">Año:</span>
-                  <span className="text-gray-800">{producto.ctpsfs.año}</span>
+                  <span className="text-gray-800">{producto.ctpsfs.ano}</span>
                 </div>
               </div>
             ) : (

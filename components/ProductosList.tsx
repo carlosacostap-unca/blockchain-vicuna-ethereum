@@ -47,7 +47,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
         .select(`
           *,
           artesano:artesanos(id, nombres, apellidos, dni),
-          ctpsfs:ctpsfs(id, numero, año)
+          ctpsfs:ctpsfs(id, numero, ano)
         `)
         .order('created_at', { ascending: false })
 
@@ -63,7 +63,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
       ))].filter(Boolean)
       
       const uniqueCTPSFS = [...new Set(productosWithRelations.map(p => 
-        p.ctpsfs ? `CTPSFS N° ${p.ctpsfs.numero} (${p.ctpsfs.año})` : ''
+        p.ctpsfs ? `CTPSFS N° ${p.ctpsfs.numero} (${p.ctpsfs.ano})` : ''
       ))].filter(Boolean)
       
       const uniqueLocalidades = [...new Set(productosWithRelations.map(p => p.localidad_origen))]
@@ -108,7 +108,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
     if (selectedCTPSFS) {
       filtered = filtered.filter(producto =>
         producto.ctpsfs && 
-        `CTPSFS N° ${producto.ctpsfs.numero} (${producto.ctpsfs.año})` === selectedCTPSFS
+        `CTPSFS N° ${producto.ctpsfs.numero} (${producto.ctpsfs.ano})` === selectedCTPSFS
       )
     }
 
@@ -451,7 +451,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
                       {producto.ctpsfs && (
                         <p>
                           <span className="font-medium">CTPSFS:</span>{' '}
-                          N° {producto.ctpsfs.numero} ({producto.ctpsfs.año})
+                          N° {producto.ctpsfs.numero} ({producto.ctpsfs.ano})
                         </p>
                       )}
                     </div>

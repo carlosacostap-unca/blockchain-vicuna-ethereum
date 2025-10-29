@@ -473,7 +473,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               <option value="">Sin CTPSFS asociado</option>
               {ctpsfs.map(cert => (
                 <option key={cert.id} value={cert.id}>
-                  CTPSFS N° {cert.numero} ({cert.año})
+                  CTPSFS N° {cert.numero} ({cert.ano})
                 </option>
               ))}
             </select>

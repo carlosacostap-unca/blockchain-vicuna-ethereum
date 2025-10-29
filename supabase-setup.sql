@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS colt (
   descripcion TEXT NOT NULL,
   lugar_procedencia procedencia_tipo NOT NULL,
   chaku_id BIGINT REFERENCES chakus(id) ON DELETE SET NULL,
-  año INTEGER NOT NULL,
+  ano INTEGER NOT NULL,
   documentacion_origen TEXT NOT NULL,
   destino destino_tipo NOT NULL,
   fecha_expedicion DATE NOT NULL,
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS colt (
 CREATE INDEX IF NOT EXISTS idx_colt_numero ON colt(numero);
 CREATE INDEX IF NOT EXISTS idx_colt_artesano_id ON colt(artesano_id);
 CREATE INDEX IF NOT EXISTS idx_colt_chaku_id ON colt(chaku_id);
-CREATE INDEX IF NOT EXISTS idx_colt_año ON colt(año);
+CREATE INDEX IF NOT EXISTS idx_colt_ano ON colt(ano);
 CREATE INDEX IF NOT EXISTS idx_colt_fecha_expedicion ON colt(fecha_expedicion);
 
 -- Crear trigger para actualizar updated_at en colt
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS ctpsfs (
   numero VARCHAR(50) UNIQUE NOT NULL,
   descripcion_producto TEXT NOT NULL,
   chaku_id BIGINT REFERENCES chakus(id) ON DELETE SET NULL,
-  año INTEGER NOT NULL,
+  ano INTEGER NOT NULL,
   documentacion_origen TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS ctpsfs_procesos_transformacion (
 -- Crear índices para mejorar el rendimiento
 CREATE INDEX IF NOT EXISTS idx_ctpsfs_numero ON ctpsfs(numero);
 CREATE INDEX IF NOT EXISTS idx_ctpsfs_chaku_id ON ctpsfs(chaku_id);
-CREATE INDEX IF NOT EXISTS idx_ctpsfs_año ON ctpsfs(año);
+CREATE INDEX IF NOT EXISTS idx_ctpsfs_ano ON ctpsfs(ano);
 CREATE INDEX IF NOT EXISTS idx_ctpsfs_procesos_ctpsfs_id ON ctpsfs_procesos_transformacion(ctpsfs_id);
 CREATE INDEX IF NOT EXISTS idx_ctpsfs_procesos_artesano_id ON ctpsfs_procesos_transformacion(artesano_id);
 CREATE INDEX IF NOT EXISTS idx_ctpsfs_procesos_fecha ON ctpsfs_procesos_transformacion(fecha_certificacion);
