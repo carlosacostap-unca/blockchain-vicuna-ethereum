@@ -49,7 +49,7 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
       setCTPSFS(ctpsfsData)
 
       // Extraer años únicos para el filtro
-      const years = [...new Set(ctpsfsData.map(c => c.año))].sort((a, b) => b - a)
+      const years = [...new Set(ctpsfsData.map(c => c.ano))].sort((a, b) => b - a)
       setAvailableYears(years)
 
       // Extraer chakus únicos para el filtro
@@ -95,7 +95,7 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
 
     // Filtrar por año
     if (yearFilter) {
-      filtered = filtered.filter(c => c.año.toString() === yearFilter)
+      filtered = filtered.filter(c => c.ano.toString() === yearFilter)
     }
 
     // Filtrar por chaku
@@ -262,7 +262,7 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
                         CTPSFS N° {ctpsfs.numero}
                       </h3>
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                        {ctpsfs.año}
+                        {ctpsfs.ano}
                       </span>
                       {ctpsfs.chaku && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 text-sm rounded-full">

@@ -19,7 +19,7 @@ export default function COLTForm({ colt, onSuccess, onCancel }: COLTFormProps) {
     descripcion: '',
     lugar_procedencia: 'En silvestría' as ProcedenciaTipo,
     chaku_id: '',
-    año: new Date().getFullYear().toString(),
+    ano: new Date().getFullYear().toString(),
     documentacion_origen: '',
     destino: 'Transformación' as DestinoTipo,
     fecha_expedicion: new Date().toISOString().split('T')[0]
@@ -48,7 +48,7 @@ export default function COLTForm({ colt, onSuccess, onCancel }: COLTFormProps) {
         descripcion: colt.descripcion,
         lugar_procedencia: colt.lugar_procedencia,
         chaku_id: colt.chaku_id?.toString() || '',
-        año: colt.año.toString(),
+        ano: colt.ano.toString(),
         documentacion_origen: colt.documentacion_origen,
         destino: colt.destino,
         fecha_expedicion: colt.fecha_expedicion
@@ -93,8 +93,8 @@ export default function COLTForm({ colt, onSuccess, onCancel }: COLTFormProps) {
       newErrors.descripcion = 'La descripción es requerida'
     }
 
-    if (!formData.año || parseInt(formData.año) < 1900 || parseInt(formData.año) > new Date().getFullYear()) {
-      newErrors.año = 'El año debe ser válido'
+    if (!formData.ano || parseInt(formData.ano) < 1900 || parseInt(formData.ano) > new Date().getFullYear()) {
+      newErrors.ano = 'El año debe ser válido'
     }
 
     if (!formData.documentacion_origen.trim()) {
@@ -126,7 +126,7 @@ export default function COLTForm({ colt, onSuccess, onCancel }: COLTFormProps) {
         descripcion: formData.descripcion.trim(),
         lugar_procedencia: formData.lugar_procedencia,
         chaku_id: formData.chaku_id ? parseInt(formData.chaku_id) : null,
-        año: parseInt(formData.año),
+        ano: parseInt(formData.ano),
         documentacion_origen: formData.documentacion_origen.trim(),
         destino: formData.destino,
         fecha_expedicion: formData.fecha_expedicion
@@ -323,22 +323,22 @@ export default function COLTForm({ colt, onSuccess, onCancel }: COLTFormProps) {
 
           {/* Año */}
           <div>
-            <label htmlFor="año" className="block text-sm font-medium form-label mb-2">
+            <label htmlFor="ano" className="block text-sm font-medium form-label mb-2">
               Año *
             </label>
             <input
-              type="number"
-              id="año"
-              name="año"
-              value={formData.año}
-              onChange={handleInputChange}
-              min="1900"
-              max={new Date().getFullYear()}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.año ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.año && <p className="text-red-500 text-sm mt-1">{errors.año}</p>}
+                type="number"
+                id="ano"
+                name="ano"
+                value={formData.ano}
+                onChange={handleInputChange}
+                min="1900"
+                max={new Date().getFullYear()}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
+                  errors.ano ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
+              {errors.ano && <p className="text-red-500 text-sm mt-1">{errors.ano}</p>}
           </div>
 
           {/* Destino */}

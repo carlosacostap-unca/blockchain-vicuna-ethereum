@@ -23,7 +23,7 @@ export default function CTPSFSForm({ ctpsfs, onSuccess, onCancel }: CTPSFSFormPr
     numero: '',
     descripcion_producto: '',
     chaku_id: '',
-    año: new Date().getFullYear().toString(),
+    ano: new Date().getFullYear().toString(),
     documentacion_origen: ''
   })
 
@@ -56,7 +56,7 @@ export default function CTPSFSForm({ ctpsfs, onSuccess, onCancel }: CTPSFSFormPr
         numero: ctpsfs.numero,
         descripcion_producto: ctpsfs.descripcion_producto,
         chaku_id: ctpsfs.chaku_id?.toString() || '',
-        año: ctpsfs.año.toString(),
+        ano: ctpsfs.ano.toString(),
         documentacion_origen: ctpsfs.documentacion_origen
       })
 
@@ -150,8 +150,8 @@ export default function CTPSFSForm({ ctpsfs, onSuccess, onCancel }: CTPSFSFormPr
     if (!formData.descripcion_producto.trim()) {
       newErrors.descripcion_producto = 'La descripción del producto es requerida'
     }
-    if (!formData.año) {
-      newErrors.año = 'El año es requerido'
+    if (!formData.ano) {
+      newErrors.ano = 'El año es requerido'
     }
     if (!formData.documentacion_origen.trim()) {
       newErrors.documentacion_origen = 'La documentación de origen es requerida'
@@ -200,7 +200,7 @@ export default function CTPSFSForm({ ctpsfs, onSuccess, onCancel }: CTPSFSFormPr
             numero: formData.numero,
             descripcion_producto: formData.descripcion_producto,
             chaku_id: formData.chaku_id ? parseInt(formData.chaku_id) : null,
-            año: parseInt(formData.año),
+            ano: parseInt(formData.ano),
             documentacion_origen: formData.documentacion_origen
           })
           .eq('id', ctpsfs.id)
@@ -221,7 +221,7 @@ export default function CTPSFSForm({ ctpsfs, onSuccess, onCancel }: CTPSFSFormPr
             numero: formData.numero,
             descripcion_producto: formData.descripcion_producto,
             chaku_id: formData.chaku_id ? parseInt(formData.chaku_id) : null,
-            año: parseInt(formData.año),
+            ano: parseInt(formData.ano),
             documentacion_origen: formData.documentacion_origen
           })
           .select()
@@ -311,22 +311,22 @@ export default function CTPSFSForm({ ctpsfs, onSuccess, onCancel }: CTPSFSFormPr
 
             {/* Año */}
             <div>
-              <label htmlFor="año" className="block text-sm font-medium form-label mb-2">
+              <label htmlFor="ano" className="block text-sm font-medium form-label mb-2">
                 Año *
               </label>
               <input
                 type="number"
-                id="año"
-                name="año"
-                value={formData.año}
+                id="ano"
+                name="ano"
+                value={formData.ano}
                 onChange={handleInputChange}
                 min="1900"
                 max={new Date().getFullYear()}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                  errors.año ? 'border-red-500' : 'border-gray-300'
+                  errors.ano ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
-              {errors.año && <p className="text-red-500 text-sm mt-1">{errors.año}</p>}
+              {errors.ano && <p className="text-red-500 text-sm mt-1">{errors.ano}</p>}
             </div>
           </div>
 

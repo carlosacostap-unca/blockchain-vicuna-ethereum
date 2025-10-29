@@ -64,7 +64,7 @@ export default function COLTList({ onEdit, onNew }: COLTListProps) {
     }
 
     if (filterYear) {
-      filtered = filtered.filter(colt => colt.año.toString() === filterYear)
+      filtered = filtered.filter(colt => colt.ano.toString() === filterYear)
     }
 
     if (filterDestino) {
@@ -99,7 +99,7 @@ export default function COLTList({ onEdit, onNew }: COLTListProps) {
   }
 
   const getUniqueYears = () => {
-    const years = [...new Set(colts.map(colt => colt.año.toString()))]
+    const years = [...new Set(colts.map(colt => colt.ano.toString()))]
     return years.sort((a, b) => parseInt(b) - parseInt(a))
   }
 
@@ -268,7 +268,7 @@ export default function COLTList({ onEdit, onNew }: COLTListProps) {
 
                 <div>
                   <span className="font-medium text-gray-700">Año:</span>
-                  <p className="text-gray-900">{colt.año}</p>
+                  <p className="text-gray-900">{colt.ano}</p>
                   <span className="font-medium text-gray-700">Fecha Expedición:</span>
                   <p className="text-gray-900">{formatDate(colt.fecha_expedicion)}</p>
                 </div>

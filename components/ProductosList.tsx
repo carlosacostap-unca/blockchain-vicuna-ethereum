@@ -47,7 +47,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
         .select(`
           *,
           artesano:artesanos(id, nombres, apellidos, dni),
-          ctpsfs:ctpsfs(id, numero, ano)
+          ctpsfs:ctpsfs(id, numero, año)
         `)
         .order('created_at', { ascending: false })
 
