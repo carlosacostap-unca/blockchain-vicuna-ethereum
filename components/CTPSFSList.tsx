@@ -60,6 +60,7 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
           index === self.findIndex(c => c.id === chaku.id)
         )
         .sort((a, b) => a.nombre.localeCompare(b.nombre))
+        .map(chaku => ({ id: chaku.id!, nombre: chaku.nombre }))
       setAvailableChakus(chakus)
 
     } catch (error) {
@@ -99,7 +100,7 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
 
     // Filtrar por chaku
     if (chakuFilter) {
-      filtered = filtered.filter(c => c.chaku?.id.toString() === chakuFilter)
+      filtered = filtered.filter(c => c.chaku?.id?.toString() === chakuFilter)
     }
 
     setFilteredCTPSFS(filtered)
@@ -286,7 +287,7 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
                       Editar
                     </button>
                     <button
-                      onClick={() => setDeleteConfirm(ctpsfs.id)}
+                      onClick={() => ctpsfs.id && setDeleteConfirm(ctpsfs.id)}
                       className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
                       Eliminar
@@ -304,9 +305,9 @@ export default function CTPSFSList({ onEdit, onNew, refreshTrigger }: CTPSFSList
                     <div className="space-y-1 text-sm">
                       <p><strong>Documentación de Origen:</strong></p>
                       <p className="text-gray-600 pl-2">{ctpsfs.documentacion_origen}</p>
-                      <p><strong>Fecha de Registro:</strong> {formatDate(ctpsfs.created_at)}</p>
+                      <p><strong>Fecha de Registro:</strong> {ctpsfs.created_at ? formatDate(ctpsfs.created_at) : 'N/A'}</p>
                       {ctpsfs.updated_at !== ctpsfs.created_at && (
-                        <p><strong>Última Actualización:</strong> {formatDate(ctpsfs.updated_at)}</p>
+                        <p><strong>Última Actualización:</strong> {ctpsfs.updated_at ? formatDate(ctpsfs.updated_at) : 'N/A'}</p>
                       )}
                     </div>
                   </div>

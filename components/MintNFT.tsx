@@ -92,16 +92,16 @@ export default function MintNFT() {
       return;
     }
 
-    if (CONTRACT_ADDRESS === "TU_DIRECCION_DE_CONTRATO_AQUI") {
-      setError('Por favor, actualiza la dirección del contrato en el código');
-      return;
-    }
-
     setIsLoading(true);
     setError('');
     setTxHash('');
 
     try {
+      if (!window.ethereum) {
+        setError('MetaMask no está instalado');
+        return;
+      }
+      
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, PRENDA_NFT_ABI, signer);

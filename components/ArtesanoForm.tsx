@@ -118,7 +118,7 @@ export default function ArtesanoForm({ artesano, onSuccess, onCancel }: Artesano
         
         if (selectedFile) {
           fotografiaUrl = await uploadPhoto(selectedFile, artesano.id!)
-          updateData.fotografia_url = fotografiaUrl
+          updateData.fotografia_url = fotografiaUrl || undefined
         }
 
         const { error } = await supabase

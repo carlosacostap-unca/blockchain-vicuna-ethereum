@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase, COLT, Artesano, Chaku, UNIDAD_OPTIONS, MATERIA_PRIMA_OPTIONS, PROCEDENCIA_OPTIONS, DESTINO_OPTIONS } from '../lib/supabase'
+import { supabase, COLT, Artesano, Chaku, UNIDAD_OPTIONS, MATERIA_PRIMA_OPTIONS, PROCEDENCIA_OPTIONS, DESTINO_OPTIONS, ProcedenciaTipo, DestinoTipo } from '../lib/supabase'
 
 interface COLTFormProps {
   colt?: COLT
@@ -17,11 +17,11 @@ export default function COLTForm({ colt, onSuccess, onCancel }: COLTFormProps) {
     cantidad: '',
     materia_prima: 'Vicugna vicugna' as const,
     descripcion: '',
-    lugar_procedencia: 'En silvestría' as const,
+    lugar_procedencia: 'En silvestría' as ProcedenciaTipo,
     chaku_id: '',
     año: new Date().getFullYear().toString(),
     documentacion_origen: '',
-    destino: 'Transformación' as const,
+    destino: 'Transformación' as DestinoTipo,
     fecha_expedicion: new Date().toISOString().split('T')[0]
   })
 

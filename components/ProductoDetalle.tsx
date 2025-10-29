@@ -188,12 +188,12 @@ export default function ProductoDetalle({ producto, onBack, onEdit }: ProductoDe
               )}
               <div className="flex justify-between">
                 <span className="font-medium text-gray-600">Fecha de registro:</span>
-                <span className="text-gray-800">{formatDate(producto.created_at)}</span>
+                <span className="text-gray-800">{producto.created_at ? formatDate(producto.created_at) : 'N/A'}</span>
               </div>
               {producto.updated_at !== producto.created_at && (
                 <div className="flex justify-between">
                   <span className="font-medium text-gray-600">Última actualización:</span>
-                  <span className="text-gray-800">{formatDate(producto.updated_at)}</span>
+                  <span className="text-gray-800">{producto.updated_at ? formatDate(producto.updated_at) : 'N/A'}</span>
                 </div>
               )}
             </div>

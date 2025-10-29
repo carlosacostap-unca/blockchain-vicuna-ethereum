@@ -48,8 +48,6 @@ export async function uploadProductPhoto(file: File, productId: number, index: n
     if (error) {
       console.error('❌ [STORAGE ERROR] Error detallado al subir archivo:', {
         message: error.message,
-        statusCode: error.statusCode,
-        error: error.error,
         details: error
       })
       return null
@@ -193,8 +191,6 @@ export async function createProductsBucketIfNotExists(): Promise<boolean> {
       if (createError) {
         console.error('❌ [BUCKET ERROR] Error creando bucket:', {
           message: createError.message,
-          statusCode: createError.statusCode,
-          error: createError.error,
           details: createError
         })
         return false

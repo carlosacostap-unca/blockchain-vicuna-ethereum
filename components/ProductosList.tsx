@@ -47,17 +47,13 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
         .select(`
           *,
           artesano:artesanos(id, nombres, apellidos, dni),
-          ctpsfs:ctpsfs(id, numero, año)
+          ctpsfs:ctpsfs(id, numero, ano)
         `)
         .order('created_at', { ascending: false })
 
       if (error) throw error
 
-      const productosWithRelations = data?.map(producto => ({
-        ...producto,
-        artesano: producto.artesano,
-        ctpsfs: producto.ctpsfs
-      })) || []
+      const productosWithRelations = data || []
 
       setProductos(productosWithRelations)
 
@@ -135,7 +131,9 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
           comparison = artesanoA.localeCompare(artesanoB)
           break
         case 'fecha':
-          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0
+          comparison = dateA - dateB
           break
         case 'tiempo':
           comparison = a.tiempo_elaboracion_meses - b.tiempo_elaboracion_meses

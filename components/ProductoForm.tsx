@@ -57,7 +57,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
         ancho_metros: producto.ancho_metros,
         alto_metros: producto.alto_metros,
         tiempo_elaboracion_meses: producto.tiempo_elaboracion_meses,
-        peso_fibra_gramos: producto.peso_fibra_gramos || '',
+        peso_fibra_gramos: producto.peso_fibra_gramos || undefined,
         fotografias: producto.fotografias || []
       })
     }
