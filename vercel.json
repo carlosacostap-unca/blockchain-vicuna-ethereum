@@ -1,12 +1,5 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
@@ -24,20 +17,6 @@
           "value": "1; mode=block"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/galeria",
-      "destination": "/galeria"
-    },
-    {
-      "source": "/nft/:tokenId",
-      "destination": "/nft/:tokenId"
-    },
-    {
-      "source": "/trazabilidad/:tokenId",
-      "destination": "/trazabilidad/:tokenId"
     }
   ]
 }
