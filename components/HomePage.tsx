@@ -10,6 +10,7 @@ interface HomePageProps {
 
 export default function HomePage({ onNavigate }: HomePageProps) {
   const [searchTerm, setSearchTerm] = useState('')
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
 
   const handleNavigation = (section: string) => {
@@ -28,10 +29,35 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     console.log('Buscando:', searchTerm)
   }
 
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
+  const handleAccessOption = (accessType: string) => {
+    console.log(`Acceso ${accessType} seleccionado`)
+    setIsMenuOpen(false)
+    
+    // Lógica de navegación específica para cada tipo de acceso
+    switch (accessType) {
+      case 'Administrador':
+        router.push('/admin')
+        break
+      case 'Artesano':
+        router.push('/artesano')
+        break
+      case 'Cooperativa':
+        console.log('Navegando a panel de Cooperativa')
+        router.push('/cooperativa')
+        break
+      default:
+        console.log(`Tipo de acceso no reconocido: ${accessType}`)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="shadow-lg" style={{ backgroundColor: '#0f324b' }}>
+      <header className="shadow-lg relative" style={{ backgroundColor: '#0f324b' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo/Título */}
@@ -74,7 +100,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             </nav>
 
             {/* Barra de búsqueda y menú hamburguesa */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 relative">
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
@@ -86,14 +112,45 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               </form>
               
               {/* Menú hamburguesa */}
-              <button
-                className="flex flex-row justify-center items-center w-8 h-8 space-x-1 hover:opacity-80 transition-opacity duration-200"
-                onClick={() => console.log('Menú hamburguesa clickeado')}
-              >
-                <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
-                <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
-                <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
-              </button>
+              <div className="relative">
+                <button
+                  className="flex flex-row justify-center items-center w-8 h-8 space-x-1 hover:opacity-80 transition-opacity duration-200"
+                  onClick={handleMenuToggle}
+                >
+                  <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
+                  <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
+                  <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
+                </button>
+
+                {/* Menú desplegable */}
+                 {isMenuOpen && (
+                   <div className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg z-50" style={{ backgroundColor: '#0f324b' }}>
+                     <div className="py-2">
+                       <button
+                         onClick={() => handleAccessOption('Administrador')}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         Acceso Administrador
+                       </button>
+                       <button
+                         onClick={() => handleAccessOption('Artesano')}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         Acceso Artesano
+                       </button>
+                       <button
+                         onClick={() => handleAccessOption('Cooperativa')}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         Acceso Cooperativa
+                       </button>
+                     </div>
+                   </div>
+                 )}
+              </div>
             </div>
 
             {/* Menú móvil (hamburguesa) */}
@@ -106,6 +163,14 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             </div>
           </div>
         </div>
+
+        {/* Overlay para cerrar el menú al hacer clic fuera */}
+        {isMenuOpen && (
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsMenuOpen(false)}
+          ></div>
+        )}
       </header>
 
       {/* Nueva sección "¿Qué es la Ruta del Telar?" - Solución definitiva */}
