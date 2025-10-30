@@ -159,6 +159,91 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </section>
 
+      {/* Locations Section */}
+      <section 
+        className="py-20"
+        style={{
+          background: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/section-vicuna2-background.webp'), linear-gradient(135deg, #10b981 0%, #059669 100%)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="container mx-auto px-4" style={{ position: 'relative', zIndex: 20 }}>
+          <h2 className="text-4xl font-bold text-center text-white mb-16">
+            UBICACIONES
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Antofagasta de la Sierra */}
+            <div 
+              className="relative overflow-hidden rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+              style={{ 
+                minHeight: '300px',
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/antofagasta-de-la-sierra-card.webp')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                zIndex: 10
+              }}
+            >
+              <div className="absolute inset-0 flex flex-col justify-end p-6">
+                <h3 className="text-xl font-bold text-white mb-2" style={{ zIndex: 15, filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8))' }}>
+                  ANTOFAGASTA DE LA SIERRA
+                </h3>
+                <p className="text-white text-sm opacity-90" style={{ zIndex: 15, filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.8))' }}>
+                  Descubre la belleza de esta región única
+                </p>
+              </div>
+            </div>
+
+            {/* Belén */}
+            <div 
+              className="relative overflow-hidden rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+              style={{ 
+                minHeight: '300px',
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/belen-card.webp')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                zIndex: 10
+              }}
+            >
+              <div className="absolute inset-0 flex flex-col justify-end p-6">
+                <h3 className="text-xl font-bold text-white mb-2" style={{ zIndex: 15, filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8))' }}>
+                  BELÉN
+                </h3>
+                <p className="text-white text-sm opacity-90" style={{ zIndex: 15, filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.8))' }}>
+                  Explora la tradición artesanal de Belén
+                </p>
+              </div>
+            </div>
+
+            {/* Santa María */}
+            <div 
+              className="relative overflow-hidden rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
+              style={{ 
+                minHeight: '300px',
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/santa-maria-card.webp')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                zIndex: 10
+              }}
+            >
+              <div className="absolute inset-0 flex flex-col justify-end p-6">
+                <h3 className="text-xl font-bold text-white mb-2" style={{ zIndex: 15, filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8))' }}>
+                  SANTA MARÍA
+                </h3>
+                <p className="text-white text-sm opacity-90" style={{ zIndex: 15, filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.8))' }}>
+                  Conoce la cultura ancestral de Santa María
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Contenido principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
