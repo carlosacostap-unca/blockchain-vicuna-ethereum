@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface HomePageProps {
   onNavigate?: (section: string) => void
@@ -102,6 +103,61 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           </div>
         </div>
       </header>
+
+      {/* Nueva sección "¿Qué es la Ruta del Telar?" - Solución definitiva */}
+      <section 
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background: `
+            linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+            url("/images/section-vicuna-background.webp"),
+            linear-gradient(135deg, #2c5530 0%, #1a3d1f 50%, #0f2912 100%)
+          `,
+          backgroundSize: 'cover, cover, cover',
+          backgroundPosition: 'center, center, center',
+          backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
+          position: 'relative'
+        }}
+      >
+        {/* Contenido */}
+        <div 
+          className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white text-center"
+          style={{ position: 'relative', zIndex: 10 }}
+        >
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6" style={{ color: '#ecd2b4' }}>
+            ¿Qué es la Ruta del Telar?
+          </h2>
+          <p className="text-lg">
+            Un proyecto que impulsa el desarrollo local y fortalece a las comunidades de Catamarca.
+          </p>
+        </div>
+      </section>
+
+      {/* Nueva sección "Estaciones de la Ruta del Telar" */}
+      <section 
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          background: `
+            linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+            url("/images/section-stations-background.webp"),
+            linear-gradient(135deg, #2c5530 0%, #1a3d1f 50%, #0f2912 100%)
+          `,
+          backgroundSize: 'cover, cover, cover',
+          backgroundPosition: 'center, center, center',
+          backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
+          position: 'relative'
+        }}
+      >
+        {/* Contenido */}
+        <div 
+          className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white text-center"
+          style={{ position: 'relative', zIndex: 10 }}
+        >
+          <p className="text-xl md:text-2xl lg:text-3xl font-light leading-relaxed" style={{ color: '#ecd2b4' }}>
+            Con 14 estaciones distribuidas en 3 departamentos, conecta territorios y saberes, ofreciendo experiencias únicas a quienes la recorren.
+          </p>
+        </div>
+      </section>
 
       {/* Contenido principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
