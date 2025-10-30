@@ -1,5 +1,30 @@
 @import "tailwindcss";
 
+/* Fuentes Maria&David locales */
+@font-face {
+  font-family: "Maria&David";
+  src: url('/fonts/MARI&DAVID.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Maria&David";
+  src: url('/fonts/MARI&DAVID BOLD.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Maria&David";
+  src: url('/fonts/MARI&DAVID EXTRABOLD.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -46,4 +71,56 @@ body {
 
 .form-text-muted {
   color: #6b7280 !important; /* text-gray-500 para textos secundarios */
+}
+
+/* Estilo específico para el input de búsqueda del header */
+.search-input::placeholder {
+  color: #ecd2b4 !important;
+}
+
+/* Fuente personalizada Maria&David */
+.font-maria-david {
+  font-family: "Maria&David", sans-serif;
+}
+
+.font-maria-david-bold {
+  font-family: "Maria&David", sans-serif;
+  font-weight: bold;
+}
+
+.font-maria-david-extrabold {
+  font-family: "Maria&David", sans-serif;
+  font-weight: 800;
+}
+
+/* Clase para el menú de navegación con Kantumruy Pro ExtraLight font-weight 200 */
+.nav-menu-item {
+  font-family: var(--font-kantumruy-pro), sans-serif;
+  font-weight: 200;
+}
+
+/* Clase para el campo de búsqueda con fondo blanco, texto negro y Kantumruy Pro en cursiva */
+.search-input-custom {
+  background-color: white;
+  color: black;
+  font-family: var(--font-kantumruy-pro), sans-serif;
+  font-weight: 200;
+  font-style: italic;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  width: 16rem;
+}
+
+.search-input-custom:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #d1d5db;
+  border-color: transparent;
+}
+
+.search-input-custom::placeholder {
+  color: #6b7280;
+  font-style: italic;
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import HomePage from '@/components/HomePage'
 import ArtesanoForm from '@/components/ArtesanoForm'
 import ArtesanosList from '@/components/ArtesanosList'
 import CooperativaForm from '@/components/CooperativaForm'
@@ -16,12 +17,12 @@ import ProductosList from '@/components/ProductosList'
 import ProductoDetalle from '@/components/ProductoDetalle'
 import { type Artesano, type Cooperativa, type Chaku, type COLTWithRelations, type CTPSFSWithRelations, type ProductoWithRelations } from '@/lib/supabase'
 
-type ViewType = 'artesanos-list' | 'artesanos-form' | 'cooperativas-list' | 'cooperativas-form' | 'chakus-list' | 'chakus-form' | 'colt-list' | 'colt-form' | 'ctpsfs-list' | 'ctpsfs-form' | 'productos-list' | 'productos-form' | 'productos-detalle'
-type SectionType = 'artesanos' | 'cooperativas' | 'chakus' | 'colt' | 'ctpsfs' | 'productos'
+type ViewType = 'home' | 'artesanos-list' | 'artesanos-form' | 'cooperativas-list' | 'cooperativas-form' | 'chakus-list' | 'chakus-form' | 'colt-list' | 'colt-form' | 'ctpsfs-list' | 'ctpsfs-form' | 'productos-list' | 'productos-form' | 'productos-detalle'
+type SectionType = 'home' | 'artesanos' | 'cooperativas' | 'chakus' | 'colt' | 'ctpsfs' | 'productos'
 
 export default function Home() {
-  const [currentSection, setCurrentSection] = useState<SectionType>('artesanos')
-  const [currentView, setCurrentView] = useState<ViewType>('artesanos-list')
+  const [currentSection, setCurrentSection] = useState<SectionType>('home')
+  const [currentView, setCurrentView] = useState<ViewType>('home')
   const [editingArtesano, setEditingArtesano] = useState<Artesano | undefined>(undefined)
   const [editingCooperativa, setEditingCooperativa] = useState<Cooperativa | undefined>(undefined)
   const [editingChaku, setEditingChaku] = useState<Chaku | undefined>(undefined)
@@ -39,7 +40,9 @@ export default function Home() {
 
   const handleSectionChange = (section: SectionType) => {
     setCurrentSection(section)
-    if (section === 'artesanos') {
+    if (section === 'home') {
+      setCurrentView('home')
+    } else if (section === 'artesanos') {
       setCurrentView('artesanos-list')
     } else if (section === 'cooperativas') {
       setCurrentView('cooperativas-list')
@@ -177,23 +180,58 @@ export default function Home() {
     }
   }
 
+  const handleHomeNavigation = (section: string) => {
+    switch (section) {
+      case 'inicio':
+        setCurrentSection('home')
+        setCurrentView('home')
+        break
+      case 'catalogo':
+        setCurrentSection('productos')
+        setCurrentView('productos-list')
+        break
+      case 'productos':
+        setCurrentSection('productos')
+        setCurrentView('productos-list')
+        break
+      case 'enlaces':
+        // Aquí se puede agregar lógica para enlaces externos o páginas específicas
+        break
+      default:
+        break
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Sistema de Gestión
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Administración de Artesanos, Cooperativas, Chakus, COLT, CTPSFS y Productos
-              </p>
-            </div>
-            
-            {/* NFT Links and Search */}
-            <div className="flex flex-col gap-4">
+      {currentView === 'home' ? (
+        <HomePage onNavigate={handleHomeNavigation} />
+      ) : (
+        <>
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center py-6">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    Sistema de Gestión
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    Administración de Artesanos, Cooperativas, Chakus, COLT, CTPSFS y Productos
+                  </p>
+                </div>
+                
+                {/* NFT Links and Search */}
+                <div className="flex flex-col gap-4">
+                  {/* Botón para volver al inicio */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleSectionChange('home')}
+                      className="px-4 py-2 bg-slate-700 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors duration-200"
+                    >
+                      🏠 Volver al Inicio
+                    </button>
+                  </div>
               {/* NFT Gallery Button */}
               <div className="flex items-center gap-2">
                 <button
@@ -475,6 +513,8 @@ export default function Home() {
           </div>
         </div>
       </footer>
+        </>
+      )}
     </div>
   )
 }
