@@ -142,10 +142,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                          // Usuario autenticado
                          <>
                            <div className="px-4 py-2 text-sm border-b border-gray-600" style={{ color: '#ecd2b4' }}>
-                             <div className="font-semibold">{profile.nombre || profile.full_name || user.email}</div>
-                             <div className="text-xs opacity-80">{profile.rol || 'Usuario'}</div>
+                             <div className="font-semibold">{profile.full_name || user.email}</div>
+                             <div className="text-xs opacity-80">{profile.role?.name || 'Usuario'}</div>
                            </div>
-                           {profile.rol === 'administrador' && (
+                           {profile.role?.name === 'administrador' && (
                              <button
                                onClick={() => {
                                  router.push('/admin')

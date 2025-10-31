@@ -24,6 +24,8 @@ export default function AdminPrendasPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingItem, setEditingItem] = useState<TipoPrenda | null>(null)
+  const [selectedItem, setSelectedItem] = useState<TipoPrenda | null>(null)
+  const [showDetails, setShowDetails] = useState(false)
   const router = useRouter()
 
   // Mostrar loading mientras se verifica la autenticación
@@ -318,7 +320,7 @@ export default function AdminPrendasPage() {
                       {/* Información del usuario */}
                       <div className="px-4 py-3 border-b border-gray-600">
                         <p className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
-                          {profile.full_name || profile.nombre || user.email}
+                          {profile.full_name || user.email}
                         </p>
                         <p className="text-xs opacity-75" style={{ color: '#ecd2b4' }}>
                           {user.email}

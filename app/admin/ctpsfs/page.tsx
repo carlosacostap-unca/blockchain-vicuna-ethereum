@@ -184,7 +184,7 @@ export default function AdminCTPSFSPage() {
                       {/* Información del usuario */}
                       <div className="px-4 py-3 border-b border-gray-600">
                         <p className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
-                          {profile.nombre || profile.full_name || user.email}
+                          {profile.full_name || user.email}
                         </p>
                         <p className="text-xs opacity-60 capitalize" style={{ color: '#ecd2b4' }}>
                           {profile.role?.name}
@@ -443,7 +443,7 @@ export default function AdminCTPSFSPage() {
                   Cerrar
                 </button>
                 <button
-                  onClick={() => handleDelete(selectedCTPSFS.id)}
+                  onClick={() => selectedCTPSFS?.id && handleDelete(selectedCTPSFS.id)}
                   className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 >
                   Eliminar

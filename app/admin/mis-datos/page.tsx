@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useRequireAuth, useAuth } from '@/lib/auth-context'
 
@@ -39,15 +39,15 @@ export default function AdminMisDatosPage() {
   }
 
   // Inicializar datos del formulario con la información del perfil
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setFormData({
-        nombre: profile.nombre || profile.full_name || '',
+        nombre: profile.full_name || '',
         email: user.email || '',
-        telefono: profile.telefono || '',
-        direccion: profile.direccion || '',
-        ciudad: profile.ciudad || '',
-        pais: profile.pais || 'Bolivia'
+        telefono: '',
+        direccion: '',
+        ciudad: '',
+        pais: 'Bolivia'
       })
     }
   }, [profile, user])
@@ -74,12 +74,12 @@ export default function AdminMisDatosPage() {
   const handleCancel = () => {
     // Restaurar datos originales
     setFormData({
-      nombre: profile.nombre || profile.full_name || '',
+      nombre: profile.full_name || '',
       email: user.email || '',
-      telefono: profile.telefono || '',
-      direccion: profile.direccion || '',
-      ciudad: profile.ciudad || '',
-      pais: profile.pais || 'Bolivia'
+      telefono: '',
+      direccion: '',
+      ciudad: '',
+      pais: 'Bolivia'
     })
     setEditMode(false)
   }
@@ -169,7 +169,7 @@ export default function AdminMisDatosPage() {
                       {/* Información del usuario */}
                       <div className="px-4 py-3 border-b border-gray-600">
                         <p className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
-                          {profile.nombre || profile.full_name || user.email}
+                          {profile.full_name || user.email}
                         </p>
                         <p className="text-xs opacity-60 capitalize" style={{ color: '#ecd2b4' }}>
                           {profile.role?.name}
@@ -295,8 +295,7 @@ export default function AdminMisDatosPage() {
                   style={{ 
                     backgroundColor: '#ecd2b4', 
                     color: '#0f324b',
-                    borderColor: '#ecd2b4',
-                    focusRingColor: '#ecd2b4'
+                    borderColor: '#ecd2b4'
                   }}
                 />
               ) : (

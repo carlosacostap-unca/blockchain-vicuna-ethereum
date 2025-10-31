@@ -417,7 +417,6 @@ export default function NewArtesanoPage() {
                 </label>
                 <ArtesanoPhotoUpload
                   onPhotoUploaded={handlePhotoUploaded}
-                  onError={setError}
                 />
               </div>
 

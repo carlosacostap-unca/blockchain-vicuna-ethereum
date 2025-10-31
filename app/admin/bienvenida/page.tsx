@@ -50,7 +50,7 @@ export default function AdminWelcomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Bienvenido, {profile.nombre || user.email}
+                Bienvenido, {profile.full_name || user.email}
               </span>
               <button
                 onClick={handleLogout}
@@ -87,7 +87,7 @@ export default function AdminWelcomePage() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-8 max-w-md mx-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Información de la Sesión</h3>
             <div className="space-y-2 text-sm text-gray-600">
-              <p><span className="font-medium">Usuario:</span> {profile.nombre || 'Administrador'}</p>
+              <p><span className="font-medium">Usuario:</span> {profile.full_name || 'Administrador'}</p>
               <p><span className="font-medium">Email:</span> {user.email}</p>
               <p><span className="font-medium">Rol:</span> Administrador</p>
               <p><span className="font-medium">Acceso:</span> Completo</p>
