@@ -109,8 +109,7 @@ export default function AdminPage() {
         router.push('/admin/generar-nft')
         break
       case 'estadisticas':
-        // router.push('/admin/estadisticas')
-        console.log('Navegando a Ver Estadísticas Globales')
+        router.push('/admin/estadisticas')
         break
       default:
         console.log(`Acción no reconocida: ${action}`)

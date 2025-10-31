@@ -45,7 +45,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         router.push('/login')
         break
       case 'Artesano':
-        router.push('/artesano')
+        router.push('/artesano/login')
         break
       case 'Cooperativa':
         console.log('Navegando a panel de Cooperativa')
@@ -149,6 +149,18 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                              <button
                                onClick={() => {
                                  router.push('/admin')
+                                 setIsMenuOpen(false)
+                               }}
+                               className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                               style={{ color: '#ecd2b4' }}
+                             >
+                               Ingresar al panel
+                             </button>
+                           )}
+                           {profile.role?.name === 'artesano' && (
+                             <button
+                               onClick={() => {
+                                 router.push('/artesano')
                                  setIsMenuOpen(false)
                                }}
                                className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"

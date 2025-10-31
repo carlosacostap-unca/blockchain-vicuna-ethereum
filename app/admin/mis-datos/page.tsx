@@ -47,7 +47,7 @@ export default function AdminMisDatosPage() {
         telefono: '',
         direccion: '',
         ciudad: '',
-        pais: 'Bolivia'
+        pais: 'Argentina'
       })
     }
   }, [profile, user])
@@ -79,7 +79,7 @@ export default function AdminMisDatosPage() {
       telefono: '',
       direccion: '',
       ciudad: '',
-      pais: 'Bolivia'
+      pais: 'Argentina'
     })
     setEditMode(false)
   }

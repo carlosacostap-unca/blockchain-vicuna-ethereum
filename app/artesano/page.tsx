@@ -2,11 +2,33 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useRequireAuth, useAuth } from '@/lib/auth-context'
 
 export default function ArtesanoPage() {
+  // Proteger la ruta - requiere autenticación y rol de artesano
+  const { user, profile, loading } = useRequireAuth('artesano')
+  const { signOut } = useAuth()
+  
   const [searchTerm, setSearchTerm] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando acceso...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si no hay usuario o perfil, no mostrar nada (el hook se encarga de redirigir)
+  if (!user || !profile) {
+    return null
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +60,7 @@ export default function ArtesanoPage() {
         router.push('/login')
         break
       case 'Artesano':
-        router.push('/artesano')
+        router.push('/artesano/login')
         break
       case 'Cooperativa':
         console.log('Navegando a Cooperativa')
