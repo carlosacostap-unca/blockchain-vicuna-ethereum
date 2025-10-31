@@ -46,7 +46,7 @@ contract PrendaNFT is ERC721, Ownable {
         string memory nombreArtesano,
         string memory numeroCTPSFS,
         uint256 pesoFibra
-    ) public onlyOwner returns (uint256) {
+    ) public returns (uint256) {
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
         

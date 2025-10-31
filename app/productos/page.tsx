@@ -92,7 +92,7 @@ export default function ProductosPage() {
     // Lógica de navegación específica para cada tipo de acceso
     switch (accessType) {
       case 'Administrador':
-        router.push('/admin')
+        router.push('/login')
         break
       case 'Artesano':
         router.push('/artesano')

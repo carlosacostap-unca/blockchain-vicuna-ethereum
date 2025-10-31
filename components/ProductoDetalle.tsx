@@ -300,23 +300,7 @@ export default function ProductoDetalle({ producto, onBack, onEdit }: ProductoDe
               {selectedImageIndex + 1} de {producto.fotografias.length}
             </div>
 
-            {/* Información del producto en el modal */}
-            <div className="absolute bottom-4 left-4 text-white bg-black bg-opacity-80 p-4 rounded-lg max-w-sm backdrop-blur-sm">
-              <h4 className="font-semibold text-lg mb-2">{producto.nombre_prenda}</h4>
-              <p className="text-sm mb-1">
-                <span className="font-medium">Artesano:</span>{' '}
-                {producto.artesano 
-                  ? `${producto.artesano.apellidos}, ${producto.artesano.nombres}`
-                  : 'No asignado'
-                }
-              </p>
-              <p className="text-sm mb-1">
-                <span className="font-medium">Localidad:</span> {producto.localidad_origen}
-              </p>
-              <p className="text-sm">
-                <span className="font-medium">Dimensiones:</span> {producto.ancho_metros}m × {producto.alto_metros}m
-              </p>
-            </div>
+
           </div>
         </div>
       )}

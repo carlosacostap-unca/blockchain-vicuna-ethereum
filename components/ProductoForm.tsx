@@ -216,6 +216,17 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
     setUploadingPhotos(true)
 
     try {
+      // Verificar autenticación antes de proceder
+      console.log('🔐 Verificando autenticación...')
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      
+      if (authError || !user) {
+        console.error('❌ Error de autenticación:', authError?.message || 'Usuario no autenticado')
+        alert('Error: Debe estar autenticado para crear productos. Por favor, inicie sesión nuevamente.')
+        return
+      }
+      
+      console.log('✅ Usuario autenticado:', user.email)
       console.log('🚀 Iniciando proceso de guardado de producto...')
       console.log('📝 Datos del formulario:', formData)
       console.log('📸 Archivos de fotos:', photoFiles.length)
@@ -377,12 +388,12 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
   const totalPhotos = (formData.fotografias?.length || 0) + photoFiles.length
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
+    <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-lg" style={{ backgroundColor: '#0f324b' }}>
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold font-maria-david" style={{ color: '#ecd2b4' }}>
           {producto ? 'Editar Producto' : 'Nuevo Producto'}
         </h2>
-        <p className="text-gray-600 mt-1">
+        <p className="mt-2 text-lg" style={{ color: '#ecd2b4' }}>
           {producto ? 'Modifica los datos del producto' : 'Completa la información del nuevo producto'}
         </p>
       </div>
@@ -392,7 +403,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Nombre de la prenda */}
           <div>
-            <label htmlFor="nombre_prenda" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="nombre_prenda" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Nombre de la Prenda *
             </label>
             <input
@@ -401,19 +412,20 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               name="nombre_prenda"
               value={formData.nombre_prenda}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.nombre_prenda ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white placeholder-gray-500 ${
+                errors.nombre_prenda ? 'border-red-500' : ''
               }`}
+              style={{ borderColor: errors.nombre_prenda ? '#ef4444' : '#ecd2b4' }}
               placeholder="Ej: Chalina de vicuña"
             />
             {errors.nombre_prenda && (
-              <p className="mt-1 text-sm text-red-600">{errors.nombre_prenda}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.nombre_prenda}</p>
             )}
           </div>
 
           {/* Tipo de Prenda */}
           <div>
-            <label htmlFor="tipo_prenda_id" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="tipo_prenda_id" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Tipo de Prenda
             </label>
             <select
@@ -421,7 +433,8 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               name="tipo_prenda_id"
               value={formData.tipo_prenda_id || ''}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+              className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white"
+              style={{ borderColor: '#ecd2b4' }}
             >
               <option value="">Seleccionar tipo de prenda</option>
               {tiposPrendas.map(tipo => (
@@ -434,7 +447,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
 
           {/* Artesano */}
           <div>
-            <label htmlFor="artesano_id" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="artesano_id" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Artesano *
             </label>
             <select
@@ -442,9 +455,10 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               name="artesano_id"
               value={formData.artesano_id}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.artesano_id ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white ${
+                errors.artesano_id ? 'border-red-500' : ''
               }`}
+              style={{ borderColor: errors.artesano_id ? '#ef4444' : '#ecd2b4' }}
             >
               <option value="">Seleccionar artesano</option>
               {artesanos.map(artesano => (
@@ -454,13 +468,13 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               ))}
             </select>
             {errors.artesano_id && (
-              <p className="mt-1 text-sm text-red-600">{errors.artesano_id}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.artesano_id}</p>
             )}
           </div>
 
           {/* CTPSFS */}
           <div>
-            <label htmlFor="ctpsfs_id" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="ctpsfs_id" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               CTPSFS (Opcional)
             </label>
             <select
@@ -468,7 +482,8 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               name="ctpsfs_id"
               value={formData.ctpsfs_id || ''}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+              className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white"
+              style={{ borderColor: '#ecd2b4' }}
             >
               <option value="">Sin CTPSFS asociado</option>
               {ctpsfs.map(cert => (
@@ -481,7 +496,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
 
           {/* Localidad de origen */}
           <div>
-            <label htmlFor="localidad_origen" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="localidad_origen" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Localidad de Origen *
             </label>
             <input
@@ -490,20 +505,21 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               name="localidad_origen"
               value={formData.localidad_origen}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.localidad_origen ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white placeholder-gray-500 ${
+                errors.localidad_origen ? 'border-red-500' : ''
               }`}
-              placeholder="Ej: Cusco, Perú"
+              style={{ borderColor: errors.localidad_origen ? '#ef4444' : '#ecd2b4' }}
+              placeholder="Ej: Laguna Blanca"
             />
             {errors.localidad_origen && (
-              <p className="mt-1 text-sm text-red-600">{errors.localidad_origen}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.localidad_origen}</p>
             )}
           </div>
         </div>
 
         {/* Técnicas utilizadas */}
         <div>
-          <label htmlFor="tecnicas_utilizadas" className="block text-sm font-medium form-label mb-1">
+          <label htmlFor="tecnicas_utilizadas" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
             Técnicas Utilizadas *
           </label>
           <textarea
@@ -512,13 +528,14 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
             value={formData.tecnicas_utilizadas}
             onChange={handleInputChange}
             rows={3}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-              errors.tecnicas_utilizadas ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white placeholder-gray-500 ${
+              errors.tecnicas_utilizadas ? 'border-red-500' : ''
             }`}
+            style={{ borderColor: errors.tecnicas_utilizadas ? '#ef4444' : '#ecd2b4' }}
             placeholder="Describe las técnicas artesanales utilizadas..."
           />
           {errors.tecnicas_utilizadas && (
-            <p className="mt-1 text-sm text-red-600">{errors.tecnicas_utilizadas}</p>
+            <p className="mt-1 text-sm text-red-400">{errors.tecnicas_utilizadas}</p>
           )}
         </div>
 
@@ -526,7 +543,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Ancho */}
           <div>
-            <label htmlFor="ancho_metros" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="ancho_metros" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Ancho (metros) *
             </label>
             <input
@@ -537,19 +554,20 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               onChange={handleInputChange}
               step="0.001"
               min="0"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.ancho_metros ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white ${
+                errors.ancho_metros ? 'border-red-500' : ''
               }`}
+              style={{ borderColor: errors.ancho_metros ? '#ef4444' : '#ecd2b4' }}
               placeholder="0.000"
             />
             {errors.ancho_metros && (
-              <p className="mt-1 text-sm text-red-600">{errors.ancho_metros}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.ancho_metros}</p>
             )}
           </div>
 
           {/* Alto */}
           <div>
-            <label htmlFor="alto_metros" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="alto_metros" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Alto (metros) *
             </label>
             <input
@@ -560,19 +578,20 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               onChange={handleInputChange}
               step="0.001"
               min="0"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.alto_metros ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white ${
+                errors.alto_metros ? 'border-red-500' : ''
               }`}
+              style={{ borderColor: errors.alto_metros ? '#ef4444' : '#ecd2b4' }}
               placeholder="0.000"
             />
             {errors.alto_metros && (
-              <p className="mt-1 text-sm text-red-600">{errors.alto_metros}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.alto_metros}</p>
             )}
           </div>
 
           {/* Tiempo de elaboración */}
           <div>
-            <label htmlFor="tiempo_elaboracion_meses" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="tiempo_elaboracion_meses" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Tiempo de Elaboración (meses) *
             </label>
             <input
@@ -582,19 +601,20 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               value={formData.tiempo_elaboracion_meses}
               onChange={handleInputChange}
               min="1"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input ${
-                errors.tiempo_elaboracion_meses ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white ${
+                errors.tiempo_elaboracion_meses ? 'border-red-500' : ''
               }`}
+              style={{ borderColor: errors.tiempo_elaboracion_meses ? '#ef4444' : '#ecd2b4' }}
               placeholder="1"
             />
             {errors.tiempo_elaboracion_meses && (
-              <p className="mt-1 text-sm text-red-600">{errors.tiempo_elaboracion_meses}</p>
+              <p className="mt-1 text-sm text-red-400">{errors.tiempo_elaboracion_meses}</p>
             )}
           </div>
 
           {/* Peso de fibra */}
           <div>
-            <label htmlFor="peso_fibra_gramos" className="block text-sm font-medium form-label mb-1">
+            <label htmlFor="peso_fibra_gramos" className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
               Peso Fibra (gramos)
             </label>
             <input
@@ -605,7 +625,8 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
               onChange={handleInputChange}
               step="0.01"
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 form-input"
+              className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white"
+              style={{ borderColor: '#ecd2b4' }}
               placeholder="0.00"
             />
           </div>
@@ -613,7 +634,7 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
 
         {/* Fotografías */}
         <div>
-          <label className="block text-sm font-medium form-label mb-2">
+          <label className="block text-sm font-bold mb-2" style={{ color: '#ecd2b4' }}>
             Fotografías ({totalPhotos}/10)
           </label>
           
@@ -625,9 +646,10 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
                 accept="image/jpeg,image/jpg,image/png,image/webp"
                 multiple
                 onChange={handlePhotoChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-gray-900 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                style={{ borderColor: '#ecd2b4' }}
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm mt-1" style={{ color: '#ecd2b4' }}>
                 Formatos permitidos: JPEG, PNG, WebP. Tamaño máximo: 5MB por imagen.
               </p>
             </div>
@@ -687,14 +709,24 @@ export default function ProductoForm({ producto, onSuccess, onCancel }: Producto
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+            className="px-6 py-3 rounded-lg font-semibold transition-colors duration-200 border-2 disabled:opacity-50"
+            style={{ 
+              backgroundColor: 'transparent',
+              borderColor: '#ecd2b4',
+              color: '#ecd2b4'
+            }}
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading || uploadingPhotos}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="px-6 py-3 rounded-lg font-semibold transition-colors duration-200 border-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ 
+              backgroundColor: '#ecd2b4',
+              borderColor: '#ecd2b4',
+              color: '#0f324b'
+            }}
           >
             {loading ? (uploadingPhotos ? 'Subiendo fotos...' : 'Guardando...') : (producto ? 'Actualizar' : 'Guardar')}
           </button>

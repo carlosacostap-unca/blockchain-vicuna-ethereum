@@ -46,7 +46,7 @@ export default function CatalogoPage() {
     // Lógica de navegación específica para cada tipo de acceso
     switch (accessType) {
       case 'Administrador':
-        router.push('/admin')
+        router.push('/login')
         break
       case 'Artesano':
         router.push('/artesano')

@@ -139,6 +139,9 @@ export interface Producto {
   tiempo_elaboracion_meses: number
   peso_fibra_gramos?: number
   fotografias?: string[] // Array de URLs de las fotografías
+  nft_creado?: boolean // Indica si ya se ha creado un NFT para este producto
+  nft_transaction_hash?: string // Hash de la transacción blockchain cuando se creó el NFT
+  nft_token_id?: number // ID del token NFT en el contrato inteligente
   created_at?: string
   updated_at?: string
 }
@@ -148,4 +151,46 @@ export interface ProductoWithRelations extends Producto {
   artesano?: Artesano
   ctpsfs?: CTPSFS
   tipo_prenda?: TipoPrenda
+}
+
+// ========================================
+// TIPOS DE AUTENTICACIÓN Y ROLES
+// ========================================
+
+// Tipos para roles de usuario
+export type UserRoleName = 'administrador' | 'artesano' | 'cooperativa'
+
+export interface UserRole {
+  id: number
+  name: UserRoleName
+  description?: string
+  created_at?: string
+}
+
+// Tipos para perfiles de usuario
+export interface UserProfile {
+  id: string // UUID del usuario de auth.users
+  email: string
+  full_name?: string
+  role_id: number
+  artesano_id?: number
+  cooperativa_id?: number
+  is_active: boolean
+  created_at?: string
+  updated_at?: string
+}
+
+// Tipo extendido para perfil con datos relacionados
+export interface UserProfileWithRelations extends UserProfile {
+  role?: UserRole
+}
+
+// Tipo para el contexto de autenticación
+export interface AuthContextType {
+  user: any | null
+  profile: UserProfileWithRelations | null
+  loading: boolean
+  signIn: (email: string, password: string) => Promise<{ error?: any }>
+  signOut: () => Promise<void>
+  hasRole: (roleName: UserRoleName) => boolean
 }

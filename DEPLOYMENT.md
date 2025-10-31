@@ -23,7 +23,7 @@ En el dashboard de Vercel, ir a la sección "Environment Variables" y agregar:
 
 #### Variables Requeridas (NEXT_PUBLIC_*)
 ```
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x41B041ab8691022d70f491a71fC62059f1BdbaFB
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x142bBdf196e0c5f1a72A345731b04f153721A1c5
 NEXT_PUBLIC_NETWORK_NAME=sepolia
 NEXT_PUBLIC_CHAIN_ID=11155111
 ```

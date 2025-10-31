@@ -124,3 +124,23 @@ body {
   color: #6b7280;
   font-style: italic;
 }
+
+/* Estilos para los campos de entrada del formulario de login */
+.login-input-custom {
+  background-color: #ecd2b4 !important;
+  border-color: #ecd2b4 !important;
+  color: #0f324b !important;
+}
+
+.login-input-custom:focus {
+  outline: none !important;
+  ring: 2px !important;
+  ring-color: #ecd2b4 !important;
+  border-color: #ecd2b4 !important;
+  box-shadow: 0 0 0 2px rgba(236, 210, 180, 0.5) !important;
+}
+
+.login-input-custom::placeholder {
+  color: #0f324b !important;
+  opacity: 0.6 !important;
+}

@@ -28,7 +28,7 @@ const PRENDA_NFT_ABI = [
 ];
 
 // Dirección del contrato desplegado (deberás actualizarla con la dirección real)
-const CONTRACT_ADDRESS = "0x41B041ab8691022d70f491a71fC62059f1BdbaFB";
+const CONTRACT_ADDRESS = "0x142bBdf196e0c5f1a72A345731b04f153721A1c5";
 
 interface FormData {
   nombreProducto: string;

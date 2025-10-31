@@ -2,11 +2,33 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useRequireAuth, useAuth } from '@/lib/auth-context'
 
 export default function AdminPage() {
+  // Proteger la ruta - requiere autenticación y rol de administrador
+  const { user, profile, loading } = useRequireAuth('administrador')
+  const { signOut } = useAuth()
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verificando acceso...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si no hay usuario o perfil, no mostrar nada (el hook se encarga de redirigir)
+  if (!user || !profile) {
+    return null
+  }
 
   const handleNavigation = (section: string) => {
     switch (section) {
@@ -43,7 +65,8 @@ export default function AdminPage() {
     // Lógica de navegación específica para cada tipo de acceso
     switch (accessType) {
       case 'Administrador':
-        router.push('/admin')
+        // Ya estamos en admin, no hacer nada o mostrar mensaje
+        setIsMenuOpen(false)
         break
       case 'Artesano':
         router.push('/artesano')
@@ -62,36 +85,28 @@ export default function AdminPage() {
     // Aquí se implementará la navegación a cada sección administrativa
     switch (action) {
       case 'mis-datos':
-        // router.push('/admin/mis-datos')
-        console.log('Navegando a Administrar Mis Datos')
+        router.push('/admin/mis-datos')
         break
       case 'artesanos':
-        // router.push('/admin/artesanos')
-        console.log('Navegando a Administrar Artesanos')
+        router.push('/admin/artesanos')
         break
       case 'cooperativas':
-        // router.push('/admin/cooperativas')
-        console.log('Navegando a Administrar Cooperativas')
+        router.push('/admin/cooperativas')
         break
       case 'chakus':
-        // router.push('/admin/chakus')
-        console.log('Navegando a Administrar Chakus')
+        router.push('/admin/chakus')
         break
       case 'colt':
-        // router.push('/admin/colt')
-        console.log('Navegando a Administrar C.O.L.T.')
+        router.push('/admin/colt')
         break
       case 'ctpsfs':
-        // router.push('/admin/ctpsfs')
-        console.log('Navegando a Administrar C.T.P.S.F.S.')
+        router.push('/admin/ctpsfs')
         break
       case 'prendas':
-        // router.push('/admin/prendas')
-        console.log('Navegando a Administrar Prendas')
+        router.push('/admin/prendas')
         break
       case 'nft':
-        // router.push('/admin/nft')
-        console.log('Navegando a Generar NFT de Prendas')
+        router.push('/admin/generar-nft')
         break
       case 'estadisticas':
         // router.push('/admin/estadisticas')
@@ -290,8 +305,21 @@ export default function AdminPage() {
 
                 {/* Menú desplegable */}
                 {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg z-50" style={{ backgroundColor: '#0f324b' }}>
+                  <div className="absolute right-0 mt-2 w-64 rounded-md shadow-lg z-50" style={{ backgroundColor: '#0f324b' }}>
                     <div className="py-1">
+                      {/* Información del usuario */}
+                      <div className="px-4 py-3 border-b border-gray-600">
+                        <p className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
+                          {profile.full_name || 'Administrador'}
+                        </p>
+                        <p className="text-xs opacity-75" style={{ color: '#ecd2b4' }}>
+                          {profile.email}
+                        </p>
+                        <p className="text-xs opacity-60 capitalize" style={{ color: '#ecd2b4' }}>
+                          {profile.role?.name}
+                        </p>
+                      </div>
+                      
                       <button
                         onClick={() => handleAccessOption('Administrador')}
                         className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
@@ -312,6 +340,20 @@ export default function AdminPage() {
                         style={{ color: '#ecd2b4' }}
                       >
                         Acceso Cooperativa
+                      </button>
+                      
+                      {/* Separador */}
+                      <div className="border-t border-gray-600 my-1"></div>
+                      
+                      {/* Botón de cerrar sesión */}
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false)
+                          signOut()
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200 text-red-400"
+                      >
+                        Cerrar Sesión
                       </button>
                     </div>
                   </div>

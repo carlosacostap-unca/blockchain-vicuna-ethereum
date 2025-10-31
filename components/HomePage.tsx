@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useAuth } from '@/lib/auth-context'
 
 interface HomePageProps {
   onNavigate?: (section: string) => void
@@ -12,6 +13,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
+  const { user, profile, signOut } = useAuth()
 
   const handleNavigation = (section: string) => {
     if (section === 'productos') {
@@ -40,7 +42,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     // Lógica de navegación específica para cada tipo de acceso
     switch (accessType) {
       case 'Administrador':
-        router.push('/admin')
+        router.push('/login')
         break
       case 'Artesano':
         router.push('/artesano')
@@ -51,6 +53,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         break
       default:
         console.log(`Tipo de acceso no reconocido: ${accessType}`)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      setIsMenuOpen(false)
+      console.log('Usuario desconectado')
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error)
     }
   }
 
@@ -126,27 +138,59 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                  {isMenuOpen && (
                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg z-50" style={{ backgroundColor: '#0f324b' }}>
                      <div className="py-2">
-                       <button
-                         onClick={() => handleAccessOption('Administrador')}
-                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                         style={{ color: '#ecd2b4' }}
-                       >
-                         Acceso Administrador
-                       </button>
-                       <button
-                         onClick={() => handleAccessOption('Artesano')}
-                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                         style={{ color: '#ecd2b4' }}
-                       >
-                         Acceso Artesano
-                       </button>
-                       <button
-                         onClick={() => handleAccessOption('Cooperativa')}
-                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                         style={{ color: '#ecd2b4' }}
-                       >
-                         Acceso Cooperativa
-                       </button>
+                       {user && profile ? (
+                         // Usuario autenticado
+                         <>
+                           <div className="px-4 py-2 text-sm border-b border-gray-600" style={{ color: '#ecd2b4' }}>
+                             <div className="font-semibold">{profile.nombre || profile.full_name || user.email}</div>
+                             <div className="text-xs opacity-80">{profile.rol || 'Usuario'}</div>
+                           </div>
+                           {profile.rol === 'administrador' && (
+                             <button
+                               onClick={() => {
+                                 router.push('/admin')
+                                 setIsMenuOpen(false)
+                               }}
+                               className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                               style={{ color: '#ecd2b4' }}
+                             >
+                               Ingresar al panel
+                             </button>
+                           )}
+                           <button
+                             onClick={handleLogout}
+                             className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                             style={{ color: '#ecd2b4' }}
+                           >
+                             Cerrar Sesión
+                           </button>
+                         </>
+                       ) : (
+                         // Usuario no autenticado - mostrar opciones de acceso
+                         <>
+                           <button
+                             onClick={() => handleAccessOption('Administrador')}
+                             className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                             style={{ color: '#ecd2b4' }}
+                           >
+                             Acceso Administrador
+                           </button>
+                           <button
+                             onClick={() => handleAccessOption('Artesano')}
+                             className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                             style={{ color: '#ecd2b4' }}
+                           >
+                             Acceso Artesano
+                           </button>
+                           <button
+                             onClick={() => handleAccessOption('Cooperativa')}
+                             className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                             style={{ color: '#ecd2b4' }}
+                           >
+                             Acceso Cooperativa
+                           </button>
+                         </>
+                       )}
                      </div>
                    </div>
                  )}

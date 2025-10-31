@@ -35,7 +35,7 @@ export default function ArtesanoPage() {
   const handleAccessOption = (option: string) => {
     switch (option) {
       case 'Administrador':
-        router.push('/admin')
+        router.push('/login')
         break
       case 'Artesano':
         router.push('/artesano')
