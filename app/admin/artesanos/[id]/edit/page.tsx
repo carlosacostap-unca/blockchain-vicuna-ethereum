@@ -290,11 +290,11 @@ export default function EditArtesanoPage() {
                 PRODUCTOS
               </button>
               <button
-                onClick={() => router.push('/galeria')}
+                onClick={() => router.push('/catalogo')}
                 className="font-medium transition-colors duration-200 hover:opacity-80"
                 style={{ color: '#ecd2b4' }}
               >
-                ENLACES
+                CATÁLOGO
               </button>
             </nav>
 

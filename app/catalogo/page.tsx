@@ -14,6 +14,7 @@ export default function CatalogoPage() {
   const [showImageModal, setShowImageModal] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false) // Nuevo estado para evitar llamadas múltiples
   const router = useRouter()
 
   const handleNavigation = (section: string) => {
@@ -81,10 +82,31 @@ export default function CatalogoPage() {
   }, [productos, searchTerm])
 
   const loadProductos = async () => {
+    // Evitar múltiples llamadas simultáneas
+    if (isLoadingProducts) {
+      console.log('Ya hay una carga en progreso, ignorando nueva llamada')
+      return
+    }
+
+    setIsLoadingProducts(true)
     setLoading(true)
     setError(null)
+    
     try {
-      // First check if we can connect to Supabase
+      console.log('Iniciando carga de productos...')
+      
+      // Primero intentar una consulta simple para verificar conectividad
+      const { data: testData, error: testError } = await supabase
+        .from('productos')
+        .select('id')
+        .limit(1)
+
+      if (testError) {
+        console.error('Error de conectividad:', testError)
+        throw new Error(`Error de conexión: ${testError.message}`)
+      }
+
+      // Si la conectividad está bien, hacer la consulta completa
       const { data, error } = await supabase
         .from('productos')
         .select(`
@@ -95,32 +117,59 @@ export default function CatalogoPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Supabase error:', error)
-        setError(`Error de base de datos: ${error.message}`)
-        throw error
+        console.error('Error en consulta completa:', error)
+        // Si falla la consulta con relaciones, intentar sin relaciones
+        const { data: simpleData, error: simpleError } = await supabase
+          .from('productos')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (simpleError) {
+          throw new Error(`Error de base de datos: ${simpleError.message}`)
+        }
+
+        console.warn('Cargando productos sin relaciones debido a error:', error.message)
+        setProductos(simpleData || [])
+        setFilteredProductos(simpleData || [])
+        setError('Productos cargados parcialmente (sin información de artesanos)')
+        return
       }
 
       const productosWithRelations = data || []
-      console.log('Productos loaded successfully:', productosWithRelations.length, 'items')
+      console.log('Productos cargados exitosamente:', productosWithRelations.length, 'items')
       setProductos(productosWithRelations)
       setFilteredProductos(productosWithRelations)
 
     } catch (error: any) {
-      console.error('Error loading productos:', error)
-      console.error('Error details:', JSON.stringify(error, null, 2))
+      console.error('Error crítico cargando productos:', error)
       
-      // Set error message for user
-      if (!error.message) {
-        setError('Error de conexión: No se pudo conectar a la base de datos. Verifica que Supabase esté configurado correctamente.')
-      } else {
-        setError(`Error: ${error.message}`)
+      // Intentar cargar productos básicos como fallback
+      try {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('productos')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (!fallbackError && fallbackData) {
+          console.log('Fallback exitoso, productos básicos cargados')
+          setProductos(fallbackData)
+          setFilteredProductos(fallbackData)
+          setError('Productos cargados en modo básico')
+          return
+        }
+      } catch (fallbackErr) {
+        console.error('Fallback también falló:', fallbackErr)
       }
       
-      // Set empty arrays to prevent UI errors
+      // Si todo falla, mostrar error
+      const errorMessage = error.message || 'Error desconocido al cargar productos'
+      setError(`Error: ${errorMessage}`)
       setProductos([])
       setFilteredProductos([])
+      
     } finally {
       setLoading(false)
+      setIsLoadingProducts(false)
     }
   }
 
@@ -230,20 +279,6 @@ export default function CatalogoPage() {
                       >
                         Acceso Administrador
                       </button>
-                      <button
-                        onClick={() => handleAccessOption('Artesano')}
-                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                        style={{ color: '#ecd2b4' }}
-                      >
-                        Acceso Artesano
-                      </button>
-                      <button
-                        onClick={() => handleAccessOption('Cooperativa')}
-                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                        style={{ color: '#ecd2b4' }}
-                      >
-                        Acceso Cooperativa
-                      </button>
                     </div>
                   </div>
                 )}
@@ -349,8 +384,9 @@ export default function CatalogoPage() {
             {filteredProductos.map((producto) => (
               <div
                 key={producto.id}
-                className="rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-105"
-                style={{ backgroundColor: 'white' }}
+                className="rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+                style={{ backgroundColor: '#0f324b' }}
+                onClick={() => router.push(`/producto/${producto.id}`)}
               >
                 {/* Imagen del producto */}
                 <div className="relative h-64 overflow-hidden">
@@ -358,57 +394,65 @@ export default function CatalogoPage() {
                     <img
                       src={producto.fotografias[0]}
                       alt={producto.nombre_prenda}
-                      className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => openImageModal(producto, 0)}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   ) : (
                     <div 
                       className="w-full h-full flex items-center justify-center"
-                      style={{ backgroundColor: '#f3f4f6' }}
+                      style={{ backgroundColor: '#1e4a5f' }}
                     >
-                      <svg className="w-16 h-16" style={{ color: '#9ca3af' }} fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-16 h-16" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                       </svg>
                     </div>
                   )}
                   {producto.fotografias && producto.fotografias.length > 1 && (
-                    <div className="absolute top-2 right-2 px-2 py-1 rounded text-xs" style={{ backgroundColor: 'rgba(15, 50, 75, 0.8)', color: '#ecd2b4' }}>
-                      +{producto.fotografias.length - 1} fotos
+                    <div className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}>
+                      +{producto.fotografias.length - 1}
                     </div>
                   )}
                 </div>
 
                 {/* Información del producto */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2" style={{ color: '#0f324b' }}>
+                  <h3 className="text-xl font-bold mb-3 font-maria-david" style={{ color: '#ecd2b4' }}>
                     {producto.nombre_prenda}
                   </h3>
                   
                   {producto.artesano && (
-                    <div className="text-sm mb-2" style={{ color: '#6b7280' }}>
-                      Artesano: {producto.artesano.nombres} {producto.artesano.apellidos}
+                    <div className="flex items-center mb-2">
+                      <svg className="w-4 h-4 mr-2" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-sm" style={{ color: '#ecd2b4', opacity: 0.9 }}>
+                        {producto.artesano.nombres} {producto.artesano.apellidos}
+                      </span>
                     </div>
                   )}
 
-                  <div className="text-sm mb-2" style={{ color: '#6b7280' }}>
-                    Origen: {producto.localidad_origen}
+                  <div className="flex items-center mb-2">
+                    <svg className="w-4 h-4 mr-2" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm" style={{ color: '#ecd2b4', opacity: 0.9 }}>
+                      {producto.localidad_origen}
+                    </span>
                   </div>
 
-                  <div className="text-sm mb-4" style={{ color: '#6b7280' }}>
-                    Dimensiones: {producto.ancho_metros}m × {producto.alto_metros}m
+                  <div className="flex items-center mb-3">
+                    <svg className="w-4 h-4 mr-2" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm" style={{ color: '#ecd2b4', opacity: 0.9 }}>
+                      {producto.ancho_metros}m × {producto.alto_metros}m
+                    </span>
                   </div>
 
-                  <div className="text-sm mb-4" style={{ color: '#0f324b' }}>
-                    Técnicas: {producto.tecnicas_utilizadas}
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}>
+                      {producto.tecnicas_utilizadas}
+                    </span>
                   </div>
-
-                  <button
-                    onClick={() => openImageModal(producto, 0)}
-                    className="w-full px-4 py-2 rounded-lg transition-colors duration-200 hover:opacity-80"
-                    style={{ backgroundColor: '#0f324b', color: '#ecd2b4' }}
-                  >
-                    Ver Detalles
-                  </button>
                 </div>
               </div>
             ))}

@@ -181,11 +181,11 @@ export default function ChakuDetailPage() {
                   PRODUCTOS
                 </button>
                 <button
-                  onClick={() => router.push('/galeria')}
+                  onClick={() => router.push('/catalogo')}
                   className="px-3 py-2 text-sm nav-menu-item transition-colors duration-200 hover:opacity-80"
                   style={{ color: '#ecd2b4' }}
                 >
-                  ENLACES
+                  CATÁLOGO
                 </button>
               </div>
             </nav>

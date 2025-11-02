@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function ProductosPage() {
+export default function EnlacesPage() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -47,7 +47,7 @@ export default function ProductosPage() {
       className="min-h-screen"
       style={{ backgroundColor: '#ecd2b4' }}
     >
-      {/* Header - Copiado de CatalogoPage */}
+      {/* Header - Copiado de ProductosPage */}
       <header className="shadow-lg relative" style={{ backgroundColor: '#0f324b' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -156,10 +156,10 @@ export default function ProductosPage() {
         {/* Título de la página */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#0f324b' }}>
-            PRODUCTOS
+            ENLACES
           </h1>
           <p className="text-lg md:text-xl max-w-3xl mx-auto" style={{ color: '#0f324b' }}>
-            Explora nuestra colección de productos artesanales elaborados con fibra de vicuña.
+            Descubre recursos y conexiones importantes relacionadas con la Ruta del Telar.
           </p>
         </div>
 
@@ -169,7 +169,7 @@ export default function ProductosPage() {
             className="rounded-lg shadow-lg p-8 md:p-12 text-center"
             style={{ backgroundColor: '#0f324b' }}
           >
-            {/* Icono de construcción */}
+            {/* Icono de enlaces/conexiones */}
             <div className="mb-8">
               <svg 
                 className="w-16 h-16 mx-auto animate-pulse" 
@@ -178,7 +178,7 @@ export default function ProductosPage() {
                 viewBox="0 0 24 24"
                 style={{ color: '#ecd2b4' }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
             </div>
 
@@ -187,9 +187,9 @@ export default function ProductosPage() {
             </h2>
             
             <p className="text-lg mb-6 leading-relaxed" style={{ color: '#ecd2b4' }}>
-              Estamos trabajando en esta sección para ofrecerte la mejor experiencia.
+              Estamos trabajando en esta sección para ofrecerte los mejores enlaces y recursos.
               <br />
-              Pronto podrás explorar todos nuestros productos artesanales de vicuña.
+              Pronto podrás acceder a información valiosa sobre organizaciones, instituciones y proyectos relacionados con la Ruta del Telar.
             </p>
 
             {/* Indicador de progreso */}

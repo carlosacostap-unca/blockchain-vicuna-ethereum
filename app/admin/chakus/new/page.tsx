@@ -99,7 +99,7 @@ export default function NewChakuPage() {
               <a href="/" className="hover:opacity-80 transition-opacity duration-200 font-maria-david" style={{ color: '#ecd2b4' }}>INICIO</a>
               <a href="/catalogo" className="hover:opacity-80 transition-opacity duration-200 font-maria-david" style={{ color: '#ecd2b4' }}>CATÁLOGO</a>
               <a href="/productos" className="hover:opacity-80 transition-opacity duration-200 font-maria-david" style={{ color: '#ecd2b4' }}>PRODUCTOS</a>
-              <a href="/galeria" className="hover:opacity-80 transition-opacity duration-200 font-maria-david" style={{ color: '#ecd2b4' }}>ENLACES</a>
+              <a href="/catalogo" className="hover:opacity-80 transition-opacity duration-200 font-maria-david" style={{ color: '#ecd2b4' }}>CATÁLOGO</a>
             </nav>
 
             <div className="flex items-center space-x-4">

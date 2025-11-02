@@ -33,11 +33,6 @@ export default function Home() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [nftSearchValue, setNftSearchValue] = useState('')
 
-  const handleViewNFTGallery = () => {
-    // Navegar a la galería pública de NFTs
-    window.open('/galeria', '_blank');
-  };
-
   const handleSectionChange = (section: SectionType) => {
     setCurrentSection(section)
     if (section === 'home') {
@@ -232,15 +227,6 @@ export default function Home() {
                       🏠 Volver al Inicio
                     </button>
                   </div>
-              {/* NFT Gallery Button */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleViewNFTGallery}
-                  className="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold rounded-lg hover:from-green-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  🖼️ Ver Galería NFT
-                </button>
-              </div>
               
               {/* NFT Links */}
               <div className="flex gap-3">

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import QRCode from 'react-qr-code'
 import { useAuth } from '@/lib/auth-context'
 
 interface HomePageProps {
@@ -186,20 +187,6 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                              style={{ color: '#ecd2b4' }}
                            >
                              Acceso Administrador
-                           </button>
-                           <button
-                             onClick={() => handleAccessOption('Artesano')}
-                             className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                             style={{ color: '#ecd2b4' }}
-                           >
-                             Acceso Artesano
-                           </button>
-                           <button
-                             onClick={() => handleAccessOption('Cooperativa')}
-                             className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
-                             style={{ color: '#ecd2b4' }}
-                           >
-                             Acceso Cooperativa
                            </button>
                          </>
                        )}
@@ -430,20 +417,9 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
               lineHeight: '1.8'
             }}>
-              Desarrollado por el Ministerio de Trabajo, Planificación y Recursos Humanos de Catamarca junto a la UNESCO, Alwaleed 
-              Philanthropies y el Consejo Federal de Inversiones (CFI), se creó la misión de poner en valor los saberes ancestrales 
-              de artesanos textiles de Catamarca y garantizar su transmisión intergeneracional.
+              El Programa de Formación Profesional y Cultural en la Ruta del Telar, desarrollado por el Ministerio de Trabajo, Planificación y Recursos Humanos de Catamarca junto a la UNESCO con el apoyo de Alwaleed Philanthropies y el Consejo Federal de Inversiones (CFI), se creó con la misión de poner en valor los saberes ancestrales de artesanos textiles de Catamarca y garantizar su transmisión intergeneracional.
             </p>
 
-            <p className="text-center" style={{ 
-              color: '#f5f5f5',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-              lineHeight: '1.8'
-            }}>
-              En este marco, se desarrolló un sistema de trazabilidad basado en tecnología blockchain para fortalecer la cadena de 
-              valor y promover el comercio justo de las prendas de vicuña, con la posibilidad de incorporar otros productos artesanales 
-              y productivos en un mediano plazo.
-            </p>
           </div>
         </div>
       </section>
@@ -554,37 +530,11 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               
               {/* Código QR */}
               <div className="bg-white p-3 rounded-lg">
-                <div className="w-16 h-16 bg-black relative">
-                  <svg className="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
-                    {/* QR Code pattern simulation */}
-                    <rect x="0" y="0" width="20" height="20"/>
-                    <rect x="25" y="0" width="5" height="5"/>
-                    <rect x="35" y="0" width="5" height="5"/>
-                    <rect x="45" y="0" width="5" height="5"/>
-                    <rect x="55" y="0" width="5" height="5"/>
-                    <rect x="65" y="0" width="5" height="5"/>
-                    <rect x="75" y="0" width="20" height="20"/>
-                    
-                    <rect x="0" y="25" width="5" height="5"/>
-                    <rect x="10" y="25" width="5" height="5"/>
-                    <rect x="20" y="25" width="5" height="5"/>
-                    <rect x="30" y="25" width="5" height="5"/>
-                    <rect x="40" y="25" width="5" height="5"/>
-                    <rect x="50" y="25" width="5" height="5"/>
-                    <rect x="60" y="25" width="5" height="5"/>
-                    <rect x="70" y="25" width="5" height="5"/>
-                    <rect x="80" y="25" width="5" height="5"/>
-                    <rect x="90" y="25" width="5" height="5"/>
-                    
-                    <rect x="0" y="75" width="20" height="20"/>
-                    <rect x="25" y="75" width="5" height="5"/>
-                    <rect x="35" y="75" width="5" height="5"/>
-                    <rect x="45" y="75" width="5" height="5"/>
-                    <rect x="55" y="75" width="5" height="5"/>
-                    <rect x="65" y="75" width="5" height="5"/>
-                    <rect x="75" y="75" width="20" height="20"/>
-                  </svg>
-                </div>
+                <QRCode
+                  value="https://rutadeltelar.catamarca.gob.ar/"
+                  size={64}
+                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                />
               </div>
 
               {/* Título y Redes Sociales */}
