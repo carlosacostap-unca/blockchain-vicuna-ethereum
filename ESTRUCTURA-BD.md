@@ -95,9 +95,11 @@ CREATE TABLE public.productos (
   nft_creado boolean NOT NULL DEFAULT false,
   nft_transaction_hash character varying,
   nft_token_id bigint UNIQUE,
+  tipo_prenda_id bigint,
   CONSTRAINT productos_pkey PRIMARY KEY (id),
   CONSTRAINT productos_artesano_id_fkey FOREIGN KEY (artesano_id) REFERENCES public.artesanos(id),
-  CONSTRAINT productos_ctpsfs_id_fkey FOREIGN KEY (ctpsfs_id) REFERENCES public.ctpsfs(id)
+  CONSTRAINT productos_ctpsfs_id_fkey FOREIGN KEY (ctpsfs_id) REFERENCES public.ctpsfs(id),
+  CONSTRAINT productos_tipo_prenda_id_fkey FOREIGN KEY (tipo_prenda_id) REFERENCES public.tipos_prendas(id)
 );
 CREATE TABLE public.tipos_prendas (
   id bigint NOT NULL DEFAULT nextval('tipos_prendas_id_seq'::regclass),

@@ -16,8 +16,6 @@ export default function AdminChakusPage() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [deleting, setDeleting] = useState<number | null>(null)
-  const [selectedChaku, setSelectedChaku] = useState<Chaku | null>(null)
-  const [showModal, setShowModal] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -32,7 +30,7 @@ export default function AdminChakusPage() {
       const { data, error } = await supabase
         .from('chakus')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('nombre', { ascending: true })
 
       if (error) throw error
       setChakus(data || [])
@@ -66,8 +64,7 @@ export default function AdminChakusPage() {
   }
 
   const handleViewDetails = (chaku: Chaku) => {
-    setSelectedChaku(chaku)
-    setShowModal(true)
+    router.push(`/admin/chakus/${chaku.id}`)
   }
 
   const handleLogout = async () => {
@@ -287,11 +284,11 @@ export default function AdminChakusPage() {
                 }}
               />
               <button
-                onClick={fetchChakus}
+                onClick={() => router.push('/admin/chakus/new')}
                 className="px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
                 style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
               >
-                Actualizar
+                Nuevo Chaku
               </button>
             </div>
           </div>
@@ -347,106 +344,13 @@ export default function AdminChakusPage() {
                     )}
                   </div>
 
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(236, 210, 180, 0.2)', color: '#ecd2b4' }}>
-                      ID: {chaku.id}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (chaku.id) handleDelete(chaku.id)
-                      }}
-                      disabled={deleting === chaku.id}
-                      className="text-red-400 hover:text-red-300 transition-colors duration-200 disabled:opacity-50"
-                      title="Eliminar chaku"
-                    >
-                      {deleting === chaku.id ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400"></div>
-                      ) : (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      )}
-                    </button>
-                  </div>
+
                 </div>
               </div>
             ))}
           </div>
         )}
       </main>
-
-      {/* Modal for Chaku Details */}
-      {showModal && selectedChaku && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" style={{ backgroundColor: '#0f324b' }}>
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold font-maria-david" style={{ color: '#ecd2b4' }}>
-                  Detalles del Chaku
-                </h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="hover:opacity-80 transition-opacity duration-200 text-2xl"
-                  style={{ color: '#ecd2b4' }}
-                >
-                  ×
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>
-                    Nombre
-                  </label>
-                  <p className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
-                    {selectedChaku.nombre}
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>
-                    Fecha de Registro
-                  </label>
-                  <p className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
-                    {selectedChaku.created_at ? new Date(selectedChaku.created_at).toLocaleString('es-ES') : 'N/A'}
-                  </p>
-                </div>
-                
-                {selectedChaku.updated_at && selectedChaku.updated_at !== selectedChaku.created_at && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>
-                      Última Actualización
-                    </label>
-                    <p className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
-                      {new Date(selectedChaku.updated_at).toLocaleString('es-ES')}
-                    </p>
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>
-                    ID del Sistema
-                  </label>
-                  <p className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
-                    {selectedChaku.id}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-6 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
-                  style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
-                >
-                  Cerrar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -12,14 +12,14 @@ export default function LoginForm() {
   const { signIn, user, profile } = useAuth()
   const router = useRouter()
 
-  // Escuchar cambios en user y profile para redirigir cuando estén listos
   useEffect(() => {
-    if (loading && user && profile) {
-      // Usuario autenticado y perfil cargado, redirigir al panel de administración
+    // Solo redirigir si el usuario está autenticado y tiene perfil
+    // No importa el estado de loading aquí
+    if (user && profile) {
+      console.log('Usuario autenticado, redirigiendo a /admin')
       router.push('/admin')
-      setLoading(false)
     }
-  }, [user, profile, loading, router])
+  }, [user, profile, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,11 +31,13 @@ export default function LoginForm() {
       
       if (error) {
         setError('Credenciales incorrectas. Por favor, verifica tu email y contraseña.')
-        setLoading(false)
       }
-      // Si no hay error, el useEffect se encargará de la redirección
+      // Siempre resetear loading, sin importar si hay error o no
+      // El useEffect se encargará de la redirección cuando user y profile estén disponibles
     } catch (err) {
       setError('Error de conexión. Por favor, intenta nuevamente.')
+    } finally {
+      // Usar finally para asegurar que loading siempre se resetee
       setLoading(false)
     }
   }

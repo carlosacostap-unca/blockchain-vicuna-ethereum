@@ -62,6 +62,12 @@ export default function ArtesanoPhotoUpload({
 
   // Manejar subida de archivo
   const handleFileUpload = async (file: File) => {
+    console.log('📸 [PHOTO UPLOAD] Iniciando proceso de subida:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type
+    })
+
     setError(null)
     
     // Verificar autenticación primero
@@ -73,6 +79,7 @@ export default function ArtesanoPhotoUpload({
     // Validar archivo
     const validationError = validateFile(file)
     if (validationError) {
+      console.error('❌ [PHOTO UPLOAD] Archivo inválido:', validationError)
       setError(validationError)
       return
     }
@@ -81,6 +88,7 @@ export default function ArtesanoPhotoUpload({
     const reader = new FileReader()
     reader.onload = (e) => {
       setPreviewUrl(e.target?.result as string)
+      console.log('✅ [PHOTO UPLOAD] Preview creado')
     }
     reader.readAsDataURL(file)
 
@@ -89,21 +97,23 @@ export default function ArtesanoPhotoUpload({
     try {
       // Usar un ID temporal si no hay artesanoId (para formulario de creación)
       const tempId = artesanoId || Date.now()
+      console.log('🔄 [PHOTO UPLOAD] Subiendo archivo con ID:', tempId)
+      
       const photoUrl = await uploadArtesanoPhoto(file, tempId)
       
-      if (photoUrl) {
-        console.log('✅ [PHOTO UPLOAD] URL generada exitosamente:', photoUrl)
-        onPhotoUploaded(photoUrl)
-        setPreviewUrl(photoUrl)
-        setError(null)
-      } else {
-        console.error('❌ [PHOTO UPLOAD] No se generó URL')
-        setError('Error al subir la fotografía. Inténtalo de nuevo.')
-        setPreviewUrl(null)
+      if (!photoUrl) {
+        throw new Error('No se pudo obtener la URL del archivo subido')
       }
+
+      console.log('✅ [PHOTO UPLOAD] Archivo subido exitosamente:', photoUrl)
+      onPhotoUploaded(photoUrl)
+      setPreviewUrl(photoUrl)
+      setError(null)
+      
     } catch (err) {
-      console.error('Error uploading photo:', err)
-      setError(err instanceof Error ? err.message : 'Error al subir la fotografía')
+      console.error('❌ [PHOTO UPLOAD] Error en handleFileUpload:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido al subir la fotografía'
+      setError(`Error al subir la fotografía: ${errorMessage}`)
       setPreviewUrl(null)
     } finally {
       setUploading(false)

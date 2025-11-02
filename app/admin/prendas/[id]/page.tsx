@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useRequireAuth, useAuth } from '@/lib/auth-context'
+import QRCode from 'qrcode'
 
 interface Artesano {
   id: string
@@ -50,6 +51,7 @@ export default function ProductoDetalle() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
@@ -57,6 +59,26 @@ export default function ProductoDetalle() {
       month: 'long',
       day: 'numeric'
     })
+  }
+
+  const generateQRCode = async () => {
+    try {
+      // Obtener la URL actual y reemplazar localhost con el dominio de producción
+      const currentUrl = window.location.href
+      const productionUrl = currentUrl.replace('http://localhost:3000', 'https://rutadeltelar.catamarca.gob.ar')
+      
+      const qrDataUrl = await QRCode.toDataURL(productionUrl, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+      setQrCodeUrl(qrDataUrl)
+    } catch (error) {
+      console.error('Error generando código QR:', error)
+    }
   }
 
   const handleNavigation = (section: string) => {
@@ -148,6 +170,11 @@ export default function ProductoDetalle() {
       fetchProducto()
     }
   }, [params.id])
+
+  // Generar código QR cuando se carga la página
+  useEffect(() => {
+    generateQRCode()
+  }, [])
 
   // Mostrar loading mientras se verifica la autenticación
   if (authLoading) {
@@ -347,13 +374,9 @@ export default function ProductoDetalle() {
             </button>
             
             <div className="flex items-center space-x-4">
-              {producto?.nft_token_id ? (
+              {producto?.nft_token_id && (
                 <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-500 text-white">
-                  NFT #{producto.nft_token_id}
-                </span>
-              ) : (
-                <span className="px-3 py-1 rounded-full text-sm font-medium bg-gray-500 text-white">
-                  Sin NFT
+                  Tokenizado
                 </span>
               )}
             </div>
@@ -546,6 +569,37 @@ export default function ProductoDetalle() {
                   >
                     Crear NFT
                   </button>
+                )}
+              </div>
+            </div>
+
+            {/* Código QR */}
+            <div className="rounded-lg shadow-lg p-6" style={{ backgroundColor: '#0f324b' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#ecd2b4' }}>Código QR</h3>
+              <div className="text-center">
+                <p className="text-sm mb-4" style={{ color: '#ecd2b4' }}>
+                  Escanea este código para acceder directamente a esta prenda
+                </p>
+                {qrCodeUrl && (
+                  <div className="flex flex-col items-center space-y-3">
+                    <img 
+                      src={qrCodeUrl} 
+                      alt="Código QR de la prenda" 
+                      className="border-2 border-white rounded-lg"
+                    />
+                    <button
+                      onClick={() => {
+                        const link = document.createElement('a')
+                        link.download = `qr-prenda-${producto.id}.png`
+                        link.href = qrCodeUrl
+                        link.click()
+                      }}
+                      className="px-4 py-2 rounded-lg font-medium transition-colors hover:opacity-90 text-sm"
+                      style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
+                    >
+                      Descargar QR
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

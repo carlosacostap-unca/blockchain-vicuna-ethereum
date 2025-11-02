@@ -468,19 +468,7 @@ export default function AdminPrendasPage() {
                   borderColor: '#ecd2b4'
                 }}
               />
-              <button
-                onClick={() => {
-                  if (activeTab === 'tipos') {
-                    fetchTiposPrendas()
-                  } else {
-                    fetchProductos()
-                  }
-                }}
-                className="px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
-                style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
-              >
-                Actualizar
-              </button>
+
               {activeTab === 'tipos' && (
                 <button
                   onClick={() => {
@@ -573,23 +561,7 @@ export default function AdminPrendasPage() {
                         <p><span className="font-medium">Descripción:</span> {tipo.descripcion || 'Sin descripción'}</p>
                       </div>
 
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(236, 210, 180, 0.2)', color: '#ecd2b4' }}>
-                          Creado: {tipo.created_at ? formatDate(tipo.created_at) : 'Fecha no disponible'}
-                        </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDeleteTipo(tipo.id!)
-                          }}
-                          className="text-red-400 hover:text-red-300 transition-colors duration-200"
-                          title="Eliminar tipo de prenda"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
+
                     </div>
                   </div>
                 ))}
@@ -669,9 +641,16 @@ export default function AdminPrendasPage() {
 
                     {/* Información */}
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2 font-maria-david" style={{ color: '#ecd2b4' }}>
-                        {producto.nombre_prenda}
-                      </h3>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold font-maria-david" style={{ color: '#ecd2b4' }}>
+                          {producto.nombre_prenda}
+                        </h3>
+                        {producto.nft_token_id && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-green-500 text-white">
+                            Tokenizado
+                          </span>
+                        )}
+                      </div>
                       
                       <div className="space-y-1 text-sm" style={{ color: '#ecd2b4', opacity: 0.8 }}>
                         <p><span className="font-medium">Tipo:</span> {producto.tipo_prenda?.nombre || 'No especificado'}</p>
@@ -680,11 +659,7 @@ export default function AdminPrendasPage() {
                         <p><span className="font-medium">Dimensiones:</span> {producto.ancho_metros}m × {producto.alto_metros}m</p>
                       </div>
 
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(236, 210, 180, 0.2)', color: '#ecd2b4' }}>
-                          Registrado: {producto.created_at ? formatDate(producto.created_at) : 'Fecha no disponible'}
-                        </span>
-                      </div>
+
                     </div>
                   </div>
                 ))}
@@ -767,7 +742,7 @@ export default function AdminPrendasPage() {
                           {producto.nombre_prenda}
                         </h3>
                         <span className="text-xs px-2 py-1 rounded-full bg-green-500 text-white">
-                          NFT: #{producto.nft_token_id}
+                          Tokenizado
                         </span>
                       </div>
                       
@@ -779,11 +754,7 @@ export default function AdminPrendasPage() {
                         <p><span className="font-medium">Dimensiones:</span> {producto.ancho_metros}m × {producto.alto_metros}m</p>
                       </div>
 
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(236, 210, 180, 0.2)', color: '#ecd2b4' }}>
-                          Registrado: {producto.created_at ? formatDate(producto.created_at) : 'Fecha no disponible'}
-                        </span>
-                      </div>
+
                     </div>
                   </div>
                 ))}
@@ -878,11 +849,7 @@ export default function AdminPrendasPage() {
                         <p><span className="font-medium">Dimensiones:</span> {producto.ancho_metros}m × {producto.alto_metros}m</p>
                       </div>
 
-                      <div className="mt-4 flex justify-between items-center">
-                        <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: 'rgba(236, 210, 180, 0.2)', color: '#ecd2b4' }}>
-                          Registrado: {producto.created_at ? formatDate(producto.created_at) : 'Fecha no disponible'}
-                        </span>
-                      </div>
+
                     </div>
                   </div>
                 ))}

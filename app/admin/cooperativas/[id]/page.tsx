@@ -1,42 +1,57 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useRequireAuth, useAuth } from '@/lib/auth-context'
 import { supabase, type Cooperativa } from '@/lib/supabase'
 
-export default function AdminCooperativasPage() {
+export default function CooperativaDetailPage() {
   // Proteger la ruta - requiere autenticación y rol de administrador
   const { user, profile, loading } = useRequireAuth('administrador')
   const { signOut } = useAuth()
-  
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [cooperativas, setCooperativas] = useState<Cooperativa[]>([])
-  const [loadingCooperativas, setLoadingCooperativas] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
+  const params = useParams()
+  const cooperativaId = params.id as string
 
-  const fetchCooperativas = async () => {
+  const [cooperativa, setCooperativa] = useState<Cooperativa | null>(null)
+  const [loadingCooperativa, setLoadingCooperativa] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const fetchCooperativa = async () => {
     try {
-      setLoadingCooperativas(true)
+      setLoadingCooperativa(true)
+      setError(null)
+
       const { data, error } = await supabase
         .from('cooperativas')
         .select('*')
-        .order('created_at', { ascending: false })
+        .eq('id', cooperativaId)
+        .single()
 
-      if (error) throw error
-      setCooperativas(data || [])
-    } catch (error: any) {
-      setError(error.message || 'Error al cargar las cooperativas')
+      if (error) {
+        if (error.code === 'PGRST116') {
+          setError('Cooperativa no encontrada')
+        } else {
+          throw error
+        }
+        return
+      }
+
+      setCooperativa(data)
+    } catch (error) {
+      console.error('Error fetching cooperativa:', error)
+      setError('Error al cargar los datos de la cooperativa')
     } finally {
-      setLoadingCooperativas(false)
+      setLoadingCooperativa(false)
     }
   }
 
   useEffect(() => {
-    fetchCooperativas()
-  }, [])
+    if (cooperativaId) {
+      fetchCooperativa()
+    }
+  }, [cooperativaId])
 
   // Mostrar loading mientras se verifica la autenticación
   if (loading) {
@@ -55,8 +70,8 @@ export default function AdminCooperativasPage() {
     return null
   }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta cooperativa?')) {
+  const handleDelete = async () => {
+    if (!cooperativa || !confirm(`¿Está seguro de que desea eliminar la cooperativa "${cooperativa.nombre}"?`)) {
       return
     }
 
@@ -64,15 +79,26 @@ export default function AdminCooperativasPage() {
       const { error } = await supabase
         .from('cooperativas')
         .delete()
-        .eq('id', id)
+        .eq('id', cooperativa.id)
 
       if (error) throw error
-      
-      // Actualizar la lista local
-      setCooperativas(prev => prev.filter(cooperativa => cooperativa.id !== id))
-    } catch (error: any) {
-      setError(error.message || 'Error al eliminar la cooperativa')
+
+      alert('Cooperativa eliminada exitosamente')
+      router.push('/admin/cooperativas')
+    } catch (error) {
+      console.error('Error deleting cooperativa:', error)
+      alert('Error al eliminar la cooperativa')
     }
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
   }
 
   const handleAccessOption = (option: string) => {
@@ -88,15 +114,6 @@ export default function AdminCooperativasPage() {
         router.push('/cooperativa')
         break
     }
-  }
-
-  const filteredCooperativas = cooperativas.filter(cooperativa =>
-    cooperativa.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cooperativa.comunidad.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES')
   }
 
   return (
@@ -221,124 +238,137 @@ export default function AdminCooperativasPage() {
       </header>
 
       {/* Contenido Principal */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Título y navegación */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navegación de regreso */}
         <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <button
-              onClick={() => router.push('/admin')}
-              className="flex items-center text-sm hover:opacity-80 transition-opacity duration-200 mr-4"
-              style={{ color: '#0f324b' }}
-            >
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Volver al Panel de Administración
-            </button>
-          </div>
-          
-          <h1 className="text-4xl font-bold mb-4 font-maria-david" style={{ color: '#0f324b' }}>
-            Administrar Cooperativas
-          </h1>
-          <p className="text-lg" style={{ color: '#0f324b' }}>
-            Gestiona las cooperativas y sus miembros registrados en el sistema
-          </p>
+          <button
+            onClick={() => router.push('/admin/cooperativas')}
+            className="flex items-center text-sm hover:opacity-80 transition-opacity duration-200"
+            style={{ color: '#0f324b' }}
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Volver a Administrar Cooperativas
+          </button>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 rounded-lg border-2" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5', color: '#dc2626' }}>
-            {error}
-          </div>
-        )}
-
-        {/* Barra de búsqueda y acciones */}
-        <div className="mb-8 p-6 rounded-lg shadow-lg" style={{ backgroundColor: '#0f324b' }}>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-            <h2 className="text-2xl font-bold font-maria-david" style={{ color: '#ecd2b4' }}>
-              Lista de Cooperativas ({filteredCooperativas.length})
-            </h2>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-              <input
-                type="text"
-                placeholder="Buscar por nombre o comunidad..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="px-4 py-2 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                style={{ 
-                  backgroundColor: '#ecd2b4', 
-                  color: '#0f324b',
-                  borderColor: '#ecd2b4'
-                }}
-              />
-              <button
-                onClick={() => router.push('/admin/cooperativas/new')}
-                className="px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
-                style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
-              >
-                Nueva Cooperativa
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Lista de cooperativas */}
-        {loadingCooperativas ? (
+        {/* Contenido principal */}
+        {loadingCooperativa ? (
           <div className="flex justify-center items-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#0f324b' }}></div>
-              <p style={{ color: '#0f324b' }}>Cargando cooperativas...</p>
+              <p style={{ color: '#0f324b' }}>Cargando detalles de la cooperativa...</p>
             </div>
           </div>
-        ) : filteredCooperativas.length === 0 ? (
+        ) : error ? (
           <div className="text-center py-12 rounded-lg shadow-lg" style={{ backgroundColor: '#0f324b' }}>
-            <div className="text-6xl mb-4">🏢</div>
+            <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-xl font-bold mb-2 font-maria-david" style={{ color: '#ecd2b4' }}>
-              {searchTerm ? 'No se encontraron cooperativas' : 'No hay cooperativas registradas'}
+              Error
             </h3>
             <p style={{ color: '#ecd2b4', opacity: 0.8 }}>
-              {searchTerm ? 'Intenta con otros términos de búsqueda' : 'Las cooperativas aparecerán aquí cuando se registren'}
+              {error}
             </p>
+            <button
+              onClick={() => router.push('/admin/cooperativas')}
+              className="mt-4 px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
+              style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
+            >
+              Volver al listado
+            </button>
           </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredCooperativas.map((cooperativa) => (
-              <div 
-                key={cooperativa.id} 
-                className="rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-xl"
-                style={{ backgroundColor: '#0f324b' }}
-                onClick={() => router.push(`/admin/cooperativas/${cooperativa.id}`)}
-              >
-                {/* Icono de cooperativa */}
-                <div className="h-32 flex items-center justify-center" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)' }}>
-                  <div className="text-center" style={{ color: '#ecd2b4' }}>
-                    <svg className="w-16 h-16 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M3 21V19C3 16.7909 4.79086 15 7 15H17C19.2091 15 21 16.7909 21 19V21H3Z"/>
-                      <path d="M5 7H19C20.1046 7 21 7.89543 21 9V13H3V9C3 7.89543 3.89543 7 5 7Z"/>
-                      <path d="M9 3H15C16.1046 3 17 3.89543 17 5V7H7V5C7 3.89543 7.89543 3 9 3Z"/>
-                    </svg>
-                    <p className="text-sm opacity-60">Cooperativa</p>
-                  </div>
-                </div>
+        ) : cooperativa ? (
+          <div className="space-y-8">
+            {/* Título */}
+            <div className="text-center">
+              <h1 className="text-4xl font-bold mb-4 font-maria-david" style={{ color: '#0f324b' }}>
+                {cooperativa.nombre}
+              </h1>
+              <p className="text-lg" style={{ color: '#0f324b', opacity: 0.8 }}>
+                Detalles de la cooperativa
+              </p>
+            </div>
 
-                {/* Información */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2 font-maria-david" style={{ color: '#ecd2b4' }}>
-                    {cooperativa.nombre}
-                  </h3>
-                  
-                  <div className="space-y-1 text-sm" style={{ color: '#ecd2b4', opacity: 0.8 }}>
-                    <p><span className="font-medium">Comunidad:</span> {cooperativa.comunidad}</p>
-                    {cooperativa.created_at && (
-                      <p><span className="font-medium">Registrada:</span> {formatDate(cooperativa.created_at)}</p>
-                    )}
-                  </div>
-
-
+            {/* Tarjeta principal */}
+            <div className="rounded-lg shadow-lg overflow-hidden" style={{ backgroundColor: '#0f324b' }}>
+              {/* Icono grande */}
+              <div className="h-48 flex items-center justify-center" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)' }}>
+                <div className="text-center" style={{ color: '#ecd2b4' }}>
+                  <svg className="w-24 h-24 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 21V19C3 16.7909 4.79086 15 7 15H17C19.2091 15 21 16.7909 21 19V21H3Z"/>
+                    <path d="M5 7H19C20.1046 7 21 7.89543 21 9V13H3V9C3 7.89543 3.89543 7 5 7Z"/>
+                    <path d="M9 3H15C16.1046 3 17 3.89543 17 5V7H7V5C7 3.89543 7.89543 3 9 3Z"/>
+                  </svg>
+                  <p className="text-lg opacity-60">Cooperativa</p>
                 </div>
               </div>
-            ))}
+
+              {/* Información detallada */}
+              <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>ID</label>
+                    <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
+                      {cooperativa.id}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>Nombre de la Cooperativa</label>
+                    <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
+                      {cooperativa.nombre}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>Comunidad</label>
+                    <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
+                      {cooperativa.comunidad}
+                    </div>
+                  </div>
+
+                  {cooperativa.created_at && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>Fecha de Registro</label>
+                      <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
+                        {formatDate(cooperativa.created_at)}
+                      </div>
+                    </div>
+                  )}
+
+                  {cooperativa.updated_at && (
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>Última Actualización</label>
+                      <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
+                        {formatDate(cooperativa.updated_at)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Acciones */}
+                <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={() => router.push(`/admin/cooperativas/${cooperativa.id}/edit`)}
+                    className="flex-1 py-3 px-6 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
+                    style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
+                  >
+                    Editar Cooperativa
+                  </button>
+                  
+                  <button
+                    onClick={handleDelete}
+                    className="flex-1 py-3 px-6 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
+                    style={{ backgroundColor: '#dc2626', color: 'white' }}
+                  >
+                    Eliminar Cooperativa
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+        ) : null}
       </main>
     </div>
   )

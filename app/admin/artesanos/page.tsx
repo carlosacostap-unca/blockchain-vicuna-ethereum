@@ -15,6 +15,10 @@ export default function AdminArtesanosPage() {
   const [loadingArtesanos, setLoadingArtesanos] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(0)
+  const [hasMoreData, setHasMoreData] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const ITEMS_PER_PAGE = 50
   const router = useRouter()
 
   // Mostrar loading mientras se verifica la autenticación
@@ -34,23 +38,152 @@ export default function AdminArtesanosPage() {
     return null
   }
 
-  const fetchArtesanos = async () => {
+  const fetchArtesanos = async (page = 0, append = false) => {
+    const timeoutId = setTimeout(() => {
+      console.error('⏰ [ARTESANOS] Timeout: La consulta está tardando demasiado')
+      setError('La carga está tardando demasiado. Por favor, recargue la página.')
+      setLoadingArtesanos(false)
+      setLoadingMore(false)
+    }, 10000) // 10 segundos timeout (reducido por optimización)
+
     try {
-      setLoadingArtesanos(true)
+      console.log(`🔍 [ARTESANOS] Iniciando carga de artesanos (página ${page})...`)
+      if (!append) {
+        setLoadingArtesanos(true)
+        setCurrentPage(0)
+        setHasMoreData(true)
+      } else {
+        setLoadingMore(true)
+      }
+      setError(null)
+
+      // Verificar autenticación antes de hacer la consulta
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      console.log('🔍 [ARTESANOS] Estado de autenticación:', {
+        user: user ? { id: user.id, email: user.email } : null,
+        authError: authError?.message
+      })
+
+      if (authError || !user) {
+        console.error('❌ [ARTESANOS] Usuario no autenticado:', authError?.message || 'No user found')
+        setError('Usuario no autenticado. Por favor, inicie sesión nuevamente.')
+        clearTimeout(timeoutId)
+        setLoadingArtesanos(false)
+        setLoadingMore(false)
+        return
+      }
+
+      console.log('🔄 [ARTESANOS] Ejecutando consulta optimizada a Supabase...')
       const { data, error } = await supabase
         .from('artesanos')
         .select(`
-          *,
-          cooperativa:cooperativas(*)
+          id,
+          nombres,
+          apellidos,
+          dni,
+          contacto,
+          domicilio,
+          fecha_nacimiento,
+          cooperativa_id,
+          fotografia_url,
+          created_at,
+          updated_at
         `)
-        .order('created_at', { ascending: false })
+        .order('nombres', { ascending: true })
+        .range(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE - 1)
 
-      if (error) throw error
-      setArtesanos(data || [])
+      console.log('🔍 [ARTESANOS] Resultado de la consulta:', {
+        data: data ? `${data.length} artesanos encontrados` : 'No data',
+        error: error ? { message: error.message, details: error } : null
+      })
+
+      if (error) {
+        console.error('❌ [ARTESANOS] Error en la consulta:', error)
+        throw error
+      }
+
+      console.log('✅ [ARTESANOS] Artesanos cargados exitosamente:', data?.length || 0)
+      
+      // Verificar si hay más datos disponibles
+      const hasMore = data && data.length === ITEMS_PER_PAGE
+      setHasMoreData(hasMore)
+      
+      // Cargar cooperativas solo para los artesanos que las tienen
+      if (data && data.length > 0) {
+        const cooperativaIds = [...new Set(data.filter(a => a.cooperativa_id).map(a => a.cooperativa_id))]
+        
+        if (cooperativaIds.length > 0) {
+          console.log('🔄 [ARTESANOS] Cargando cooperativas asociadas...')
+          const { data: cooperativas, error: cooperativasError } = await supabase
+            .from('cooperativas')
+            .select('id, nombre')
+            .in('id', cooperativaIds)
+          
+          if (!cooperativasError && cooperativas) {
+            // Crear un mapa de cooperativas para acceso rápido
+            const cooperativasMap = new Map(cooperativas.map(c => [c.id, c]))
+            
+            // Agregar información de cooperativa a cada artesano
+            const artesanosWithCooperativas = data.map(artesano => ({
+              ...artesano,
+              cooperativa: artesano.cooperativa_id ? cooperativasMap.get(artesano.cooperativa_id) : null
+            }))
+            
+            console.log('✅ [ARTESANOS] Cooperativas cargadas exitosamente')
+            
+            // Actualizar la lista según el modo (append o replace)
+            if (append) {
+              setArtesanos(prev => [...prev, ...artesanosWithCooperativas])
+              setCurrentPage(page)
+            } else {
+              setArtesanos(artesanosWithCooperativas)
+              setCurrentPage(0)
+            }
+          } else {
+            console.warn('⚠️ [ARTESANOS] Error al cargar cooperativas:', cooperativasError)
+            if (append) {
+              setArtesanos(prev => [...prev, ...(data || [])])
+              setCurrentPage(page)
+            } else {
+              setArtesanos(data || [])
+              setCurrentPage(0)
+            }
+          }
+        } else {
+          if (append) {
+            setArtesanos(prev => [...prev, ...(data || [])])
+            setCurrentPage(page)
+          } else {
+            setArtesanos(data || [])
+            setCurrentPage(0)
+          }
+        }
+      } else {
+        if (!append) {
+          setArtesanos([])
+          setCurrentPage(0)
+        }
+      }
+      
     } catch (error: any) {
-      setError(error.message || 'Error al cargar los artesanos')
+      console.error('❌ [ARTESANOS] Error general en fetchArtesanos:', {
+        error,
+        message: error.message || 'Error desconocido',
+        stack: error.stack
+      })
+      setError(error.message || 'Error al cargar los artesanos. Por favor, intente nuevamente.')
     } finally {
+      clearTimeout(timeoutId)
+      console.log('🏁 [ARTESANOS] Finalizando carga de artesanos')
       setLoadingArtesanos(false)
+      setLoadingMore(false)
+    }
+  }
+
+  // Función para cargar más artesanos
+  const loadMoreArtesanos = () => {
+    if (!loadingMore && hasMoreData) {
+      fetchArtesanos(currentPage + 1, true)
     }
   }
 
@@ -263,8 +396,26 @@ export default function AdminArtesanosPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 rounded-lg border-2" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5', color: '#dc2626' }}>
-            {error}
+          <div className="mb-6 p-4 rounded-lg border-2 flex justify-between items-start" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5', color: '#dc2626' }}>
+            <div className="flex-1">
+              <div className="flex items-center mb-2">
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">Error al cargar artesanos</span>
+              </div>
+              <p className="text-sm">{error}</p>
+            </div>
+            <button
+              onClick={() => {
+                setError(null)
+                fetchArtesanos()
+              }}
+              className="ml-4 px-3 py-1 text-sm rounded-md border border-red-300 hover:bg-red-50 transition-colors duration-200"
+              style={{ color: '#dc2626' }}
+            >
+              Reintentar
+            </button>
           </div>
         )}
 
@@ -293,13 +444,6 @@ export default function AdminArtesanosPage() {
                 style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
               >
                 Nuevo Artesano
-              </button>
-              <button
-                onClick={fetchArtesanos}
-                className="px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
-                style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
-              >
-                Actualizar
               </button>
             </div>
           </div>
@@ -369,6 +513,39 @@ export default function AdminArtesanosPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Botón para cargar más artesanos */}
+        {!loadingArtesanos && filteredArtesanos.length > 0 && hasMoreData && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={loadMoreArtesanos}
+              disabled={loadingMore}
+              className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ 
+                backgroundColor: loadingMore ? '#6b7280' : '#0f324b',
+                color: '#ecd2b4',
+                border: '2px solid #ecd2b4'
+              }}
+            >
+              {loadingMore ? (
+                <div className="flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                  <span>Cargando más...</span>
+                </div>
+              ) : (
+                `Cargar más artesanos (${artesanos.length} de muchos)`
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Información de paginación */}
+        {!loadingArtesanos && filteredArtesanos.length > 0 && (
+          <div className="mt-4 text-center text-sm" style={{ color: '#0f324b', opacity: 0.7 }}>
+            Mostrando {filteredArtesanos.length} artesanos
+            {hasMoreData && ' (hay más disponibles)'}
           </div>
         )}
 

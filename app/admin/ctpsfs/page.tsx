@@ -17,8 +17,6 @@ export default function AdminCTPSFSPage() {
   const [loadingCTPSFS, setLoadingCTPSFS] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCTPSFS, setSelectedCTPSFS] = useState<CTPSFS | null>(null)
-  const [showDetails, setShowDetails] = useState(false)
 
   // Cargar datos cuando el usuario esté autenticado
   useEffect(() => {
@@ -61,10 +59,6 @@ export default function AdminCTPSFSPage() {
 
       // Actualizar la lista local
       setCTPSFS(prev => prev.filter(ctpsfs => ctpsfs.id !== id))
-      
-      // Cerrar el modal si el CTPSFS eliminado estaba seleccionado
-      setSelectedCTPSFS(null)
-      setShowDetails(false)
     } catch (error) {
       console.error('Error deleting CTPSFS:', error)
       alert('Error al eliminar el certificado CTPSFS')
@@ -117,56 +111,71 @@ export default function AdminCTPSFSPage() {
     ctpsfs.documentacion_origen?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Función para manejar opciones de acceso
   const handleAccessOption = (option: string) => {
-    console.log(`Accediendo como: ${option}`)
     setIsMenuOpen(false)
+    switch (option) {
+      case 'Administrador':
+        router.push('/admin')
+        break
+      case 'Artesano':
+        router.push('/artesano')
+        break
+      case 'Cooperativa':
+        router.push('/cooperativa')
+        break
+    }
   }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#ecd2b4' }}>
-      {/* Header */}
-      <header className="shadow-sm" style={{ backgroundColor: '#0f324b' }}>
+      {/* Header - Igual al de la página admin */}
+      <header className="shadow-lg relative" style={{ backgroundColor: '#0f324b' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo y título */}
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold" style={{ color: '#ecd2b4' }}>
-                RUTA DEL TELAR
-              </h1>
+          <div className="flex items-center justify-between h-16">
+            {/* Logo/Título */}
+            <div className="flex-shrink-0">
+              <h1 className="text-xl tracking-wide font-maria-david" style={{ color: '#ecd2b4' }}>RUTA DEL TELAR</h1>
             </div>
 
-            {/* Navegación central */}
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="px-3 py-2 text-sm font-medium hover:opacity-80" style={{ color: '#ecd2b4' }}>
-                INICIO
-              </a>
-              <a href="#" className="px-3 py-2 text-sm font-medium hover:opacity-80" style={{ color: '#ecd2b4' }}>
-                CATÁLOGO
-              </a>
-              <a href="#" className="px-3 py-2 text-sm font-medium hover:opacity-80" style={{ color: '#ecd2b4' }}>
-                PRODUCTOS
-              </a>
-              <a href="#" className="px-3 py-2 text-sm font-medium hover:opacity-80" style={{ color: '#ecd2b4' }}>
-                ENLACES
-              </a>
+            {/* Navegación */}
+            <nav className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-8">
+                <button
+                  onClick={() => router.push('/')}
+                  className="px-3 py-2 text-sm nav-menu-item transition-colors duration-200 hover:opacity-80"
+                  style={{ color: '#ecd2b4' }}
+                >
+                  INICIO
+                </button>
+                <button
+                  onClick={() => router.push('/catalogo')}
+                  className="px-3 py-2 text-sm nav-menu-item transition-colors duration-200 hover:opacity-80"
+                  style={{ color: '#ecd2b4' }}
+                >
+                  CATÁLOGO
+                </button>
+                <button
+                  onClick={() => router.push('/productos')}
+                  className="px-3 py-2 text-sm nav-menu-item transition-colors duration-200 hover:opacity-80"
+                  style={{ color: '#ecd2b4' }}
+                >
+                  PRODUCTOS
+                </button>
+                <button
+                  onClick={() => router.push('/enlaces')}
+                  className="px-3 py-2 text-sm nav-menu-item transition-colors duration-200 hover:opacity-80"
+                  style={{ color: '#ecd2b4' }}
+                >
+                  ENLACES
+                </button>
+              </div>
             </nav>
 
-            {/* Barra de búsqueda y menú de usuario */}
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="BUSCAR..."
-                  className="px-4 py-2 rounded-full text-sm w-64 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
-                />
-              </div>
-
-              {/* Menú de usuario */}
+            {/* Menú de usuario */}
+            <div className="flex items-center">
               <div className="relative">
                 <button
-                  className="flex items-center space-x-1 p-2 rounded-md hover:bg-opacity-80"
+                  className="flex flex-row justify-center items-center w-8 h-8 space-x-1 hover:opacity-80 transition-opacity duration-200"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
                   <div className="w-0.5 h-6" style={{ backgroundColor: '#ecd2b4' }}></div>
@@ -190,34 +199,42 @@ export default function AdminCTPSFSPage() {
                           {profile.role?.name}
                         </p>
                       </div>
-
-                      {/* Opciones de acceso */}
-                      <div className="py-2">
-                        <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wide opacity-60" style={{ color: '#ecd2b4' }}>
-                          Acceder como
-                        </p>
-                        {['Administrador', 'Artesano', 'Cooperativa'].map((option) => (
-                          <button
-                            key={option}
-                            onClick={() => handleAccessOption(option)}
-                            className="block w-full text-left px-4 py-2 text-sm hover:bg-opacity-80 hover:bg-gray-700"
-                            style={{ color: '#ecd2b4' }}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Cerrar sesión */}
-                      <div className="border-t border-gray-600 py-2">
-                        <button
-                          onClick={signOut}
-                          className="block w-full text-left px-4 py-2 text-sm hover:bg-opacity-80 hover:bg-gray-700"
-                          style={{ color: '#ecd2b4' }}
-                        >
-                          Cerrar sesión
-                        </button>
-                      </div>
+                      
+                      <button
+                        onClick={() => handleAccessOption('Administrador')}
+                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                        style={{ color: '#ecd2b4' }}
+                      >
+                        Acceso Administrador
+                      </button>
+                      <button
+                        onClick={() => handleAccessOption('Artesano')}
+                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                        style={{ color: '#ecd2b4' }}
+                      >
+                        Acceso Artesano
+                      </button>
+                      <button
+                        onClick={() => handleAccessOption('Cooperativa')}
+                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                        style={{ color: '#ecd2b4' }}
+                      >
+                        Acceso Cooperativa
+                      </button>
+                      
+                      {/* Separador */}
+                      <div className="border-t border-gray-600 my-1"></div>
+                      
+                      {/* Botón de cerrar sesión */}
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false)
+                          signOut()
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200 text-red-400"
+                      >
+                        Cerrar Sesión
+                      </button>
                     </div>
                   </div>
                 )}
@@ -227,67 +244,103 @@ export default function AdminCTPSFSPage() {
         </div>
       </header>
 
-      {/* Contenido principal */}
+      {/* Contenido Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Título y navegación */}
         <div className="mb-8">
-          <div className="flex items-center space-x-2 text-sm mb-4">
-            <button 
+          <div className="flex items-center mb-4">
+            <button
               onClick={() => router.push('/admin')}
-              className="hover:underline"
+              className="flex items-center text-sm hover:opacity-80 transition-opacity duration-200 mr-4"
               style={{ color: '#0f324b' }}
             >
-              Panel de Administración
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Volver al Panel de Administración
             </button>
-            <span style={{ color: '#0f324b' }}>›</span>
-            <span className="font-medium" style={{ color: '#0f324b' }}>
-              Administrar C.T.P.S.F.S.
-            </span>
           </div>
           
-          <h1 className="text-3xl font-bold mb-2" style={{ color: '#0f324b' }}>
+          <h1 className="text-4xl font-bold mb-4 font-maria-david" style={{ color: '#0f324b' }}>
             Certificados de Transformación de Productos y Subproductos de Fauna Silvestre
           </h1>
-          <p className="text-lg opacity-80" style={{ color: '#0f324b' }}>
+          <p className="text-lg" style={{ color: '#0f324b' }}>
             Gestiona los certificados C.T.P.S.F.S. del sistema
           </p>
         </div>
 
-        {/* Barra de búsqueda */}
-        <div className="mb-6">
-          <div className="relative max-w-md">
-            <input
-              type="text"
-              placeholder="Buscar por número de certificado, descripción o documentación..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              style={{ backgroundColor: 'white', color: '#0f324b' }}
-            />
-          </div>
-        </div>
-
-        {/* Contenido de la lista */}
         {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-            {error}
+          <div className="mb-6 p-4 rounded-lg border-2 flex justify-between items-start" style={{ backgroundColor: '#fee2e2', borderColor: '#fca5a5', color: '#dc2626' }}>
+            <div className="flex-1">
+              <div className="flex items-center mb-2">
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span className="font-medium">Error al cargar certificados C.T.P.S.F.S.</span>
+              </div>
+              <p className="text-sm">{error}</p>
+            </div>
+            <button
+              onClick={() => {
+                setError(null)
+                fetchCTPSFS()
+              }}
+              className="ml-4 px-3 py-1 text-sm rounded-md border border-red-300 hover:bg-red-50 transition-colors duration-200"
+              style={{ color: '#dc2626' }}
+            >
+              Reintentar
+            </button>
           </div>
         )}
 
+        {/* Barra de búsqueda y acciones */}
+        <div className="mb-8 p-6 rounded-lg shadow-lg" style={{ backgroundColor: '#0f324b' }}>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            <h2 className="text-2xl font-bold font-maria-david" style={{ color: '#ecd2b4' }}>
+              Lista de Certificados C.T.P.S.F.S. ({filteredCTPSFS.length})
+            </h2>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+              <input
+                type="text"
+                placeholder="Buscar por número de certificado, descripción o documentación..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="px-4 py-2 rounded-lg border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                style={{ 
+                  backgroundColor: '#ecd2b4', 
+                  color: '#0f324b',
+                  borderColor: '#ecd2b4'
+                }}
+              />
+              <button
+                onClick={() => router.push('/admin/ctpsfs/nuevo')}
+                className="px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-80"
+                style={{ backgroundColor: '#ecd2b4', color: '#0f324b' }}
+              >
+                Nuevo C.T.P.S.F.S.
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Lista de certificados */}
         {loadingCTPSFS ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
-            <span className="ml-3" style={{ color: '#0f324b' }}>Cargando certificados C.T.P.S.F.S...</span>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#0f324b' }}></div>
           </div>
         ) : filteredCTPSFS.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📋</div>
-            <h3 className="text-xl font-semibold mb-2" style={{ color: '#0f324b' }}>
-              No se encontraron certificados C.T.P.S.F.S.
-            </h3>
-            <p className="opacity-60" style={{ color: '#0f324b' }}>
-              {searchTerm ? 'Intenta con otros términos de búsqueda' : 'Aún no hay certificados registrados'}
-            </p>
+          <div className="bg-white rounded-lg shadow-lg">
+            <div className="text-center py-12">
+              <svg className="mx-auto h-12 w-12 mb-4" style={{ color: '#6b7280' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <h3 className="text-lg font-medium mb-2" style={{ color: '#374151' }}>
+                No se encontraron certificados C.T.P.S.F.S.
+              </h3>
+              <p className="text-sm" style={{ color: '#6b7280' }}>
+                {searchTerm ? 'Intenta con otros términos de búsqueda' : 'Aún no hay certificados registrados'}
+              </p>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -296,163 +349,41 @@ export default function AdminCTPSFSPage() {
                 key={ctpsfs.id}
                 className="rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer p-6"
                 style={{ backgroundColor: '#0f324b' }}
-                onClick={() => {
-                  setSelectedCTPSFS(ctpsfs)
-                  setShowDetails(true)
-                }}
+                onClick={() => router.push(`/admin/ctpsfs/${ctpsfs.id}`)}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-2xl">📋</div>
-                    <div>
-                      <h3 className="font-semibold text-lg" style={{ color: '#ecd2b4' }}>
-                        {ctpsfs.numero || 'Sin número'}
-                      </h3>
-                      <p className="text-sm opacity-60" style={{ color: '#ecd2b4' }}>
-                        Certificado C.T.P.S.F.S.
-                      </p>
-                    </div>
+                {/* Icono del certificado */}
+                <div className="h-48 flex items-center justify-center" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)' }}>
+                  <div className="text-center" style={{ color: '#ecd2b4' }}>
+                    <svg className="w-24 h-24 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                      <path d="M8,12V14H16V12H8M8,16V18H13V16H8Z"/>
+                    </svg>
+                    <p className="text-lg opacity-60">Certificado</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    ctpsfs.ano && ctpsfs.ano >= new Date().getFullYear() 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    Año {ctpsfs.ano}
-                  </span>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm opacity-60" style={{ color: '#ecd2b4' }}>Descripción:</span>
-                    <span className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
-                      {ctpsfs.descripcion_producto || 'No especificada'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm opacity-60" style={{ color: '#ecd2b4' }}>Documentación:</span>
-                    <span className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
-                      {ctpsfs.documentacion_origen ? 'Disponible' : 'No disponible'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm opacity-60" style={{ color: '#ecd2b4' }}>Fecha:</span>
-                    <span className="text-sm font-medium" style={{ color: '#ecd2b4' }}>
-                      {ctpsfs.created_at ? formatDate(ctpsfs.created_at) : 'No disponible'}
-                    </span>
-                  </div>
-                </div>
+                {/* Información del certificado */}
+                 <div className="mt-4">
+                   <h3 className="text-xl font-bold mb-2" style={{ color: '#ecd2b4' }}>
+                     #{ctpsfs.numero}
+                   </h3>
+                   <div className="space-y-2 text-sm" style={{ color: '#ecd2b4' }}>
+                     <p><span className="opacity-60">Producto:</span> {ctpsfs.descripcion_producto}</p>
+                     <p><span className="opacity-60">Año:</span> {ctpsfs.ano}</p>
+                   </div>
+                   
+                   {/* Badge de transformación */}
+                   <div className="mt-4">
+                     <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                       Transformación
+                     </span>
+                   </div>
+                 </div>
               </div>
             ))}
           </div>
         )}
       </main>
-
-      {/* Modal de detalles */}
-      {showDetails && selectedCTPSFS && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div 
-            className="rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            style={{ backgroundColor: '#0f324b' }}
-          >
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold" style={{ color: '#ecd2b4' }}>
-                  Detalles del Certificado C.T.P.S.F.S.
-                </h2>
-                <button
-                  onClick={() => setShowDetails(false)}
-                  className="text-2xl hover:opacity-70"
-                  style={{ color: '#ecd2b4' }}
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    Número de Certificado:
-                  </label>
-                  <p className="text-lg" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.numero || 'No especificado'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    Año:
-                  </label>
-                  <p className="text-lg" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.ano || 'No especificado'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    Descripción del Producto:
-                  </label>
-                  <p className="text-lg" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.descripcion_producto || 'No especificada'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    Documentación de Origen:
-                  </label>
-                  <p className="text-lg" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.documentacion_origen || 'No especificada'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    Fecha de Registro:
-                  </label>
-                  <p className="text-lg" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.created_at ? formatDate(selectedCTPSFS.created_at) : 'No disponible'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    Última Actualización:
-                  </label>
-                  <p className="text-lg" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.updated_at ? formatDate(selectedCTPSFS.updated_at) : 'No disponible'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#ecd2b4' }}>
-                    ID del Sistema:
-                  </label>
-                  <p className="text-lg font-mono" style={{ color: '#ecd2b4' }}>
-                    {selectedCTPSFS.id}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-3 mt-8 pt-6 border-t border-gray-600">
-                <button
-                  onClick={() => setShowDetails(false)}
-                  className="px-6 py-2 rounded-lg border hover:opacity-80"
-                  style={{ borderColor: '#ecd2b4', color: '#ecd2b4' }}
-                >
-                  Cerrar
-                </button>
-                <button
-                  onClick={() => selectedCTPSFS?.id && handleDelete(selectedCTPSFS.id)}
-                  className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

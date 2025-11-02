@@ -132,12 +132,45 @@ export async function uploadArtesanoPhoto(file: File, artesanoId: number): Promi
       bucket: ARTESANOS_BUCKET
     })
 
-    // Verificar autenticación
+    // Verificar autenticación PRIMERO
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     console.log('🔍 [ARTESANO STORAGE DEBUG] Estado de autenticación:', {
       user: user ? { id: user.id, email: user.email } : null,
       authError: authError?.message
     })
+
+    if (authError || !user) {
+      console.error('❌ [ARTESANO STORAGE ERROR] Usuario no autenticado:', authError?.message || 'No user found')
+      throw new Error('Usuario no autenticado. Por favor, inicie sesión.')
+    }
+
+    // Verificar que el bucket existe y crearlo si es necesario
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
+    console.log('🔍 [ARTESANO STORAGE DEBUG] Buckets disponibles:', buckets?.map(b => ({ id: b.id, name: b.name, public: b.public })))
+    
+    if (bucketsError) {
+      console.error('❌ [ARTESANO STORAGE ERROR] Error listando buckets:', bucketsError)
+      throw new Error(`Error accediendo al storage: ${bucketsError.message}`)
+    }
+
+    const bucketExists = buckets?.some(bucket => bucket.id === ARTESANOS_BUCKET)
+    if (!bucketExists) {
+      console.log('🔧 [ARTESANO STORAGE] Bucket no encontrado, intentando crear...')
+      
+      // Intentar crear el bucket
+      const { data: newBucket, error: createError } = await supabase.storage.createBucket(ARTESANOS_BUCKET, {
+        public: true,
+        allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+        fileSizeLimit: 5242880 // 5MB
+      })
+      
+      if (createError) {
+        console.error('❌ [ARTESANO STORAGE ERROR] Error creando bucket:', createError)
+        throw new Error(`Bucket ${ARTESANOS_BUCKET} no existe y no se pudo crear: ${createError.message}`)
+      }
+      
+      console.log('✅ [ARTESANO STORAGE] Bucket creado exitosamente:', newBucket)
+    }
 
     // Generar nombre único para el archivo
     const fileExt = file.name.split('.').pop()
@@ -159,7 +192,7 @@ export async function uploadArtesanoPhoto(file: File, artesanoId: number): Promi
         message: error.message,
         details: error
       })
-      return null
+      throw new Error(`Error subiendo archivo: ${error.message}`)
     }
 
     console.log('✅ [ARTESANO STORAGE SUCCESS] Archivo subido exitosamente:', data)
