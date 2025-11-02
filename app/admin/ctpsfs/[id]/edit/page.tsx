@@ -91,7 +91,7 @@ export default function EditCTPSFSPage() {
 
       // Cargar procesos de transformación existentes
       if (data.procesos_transformacion && data.procesos_transformacion.length > 0) {
-        setProcesos(data.procesos_transformacion.map(proceso => ({
+        setProcesos(data.procesos_transformacion.map((proceso: any) => ({
           id: proceso.id,
           descripcion_producto: proceso.descripcion_producto,
           cantidad: proceso.cantidad.toString(),
@@ -532,8 +532,7 @@ export default function EditCTPSFSPage() {
                         style={{ 
                           backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                           color: '#ecd2b4',
-                          border: '1px solid rgba(236, 210, 180, 0.3)',
-                          focusRingColor: '#ecd2b4'
+                          border: '1px solid rgba(236, 210, 180, 0.3)'
                         }}
                         placeholder="Ingrese el número del certificado"
                       />
@@ -558,8 +557,7 @@ export default function EditCTPSFSPage() {
                         style={{ 
                           backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                           color: '#ecd2b4',
-                          border: '1px solid rgba(236, 210, 180, 0.3)',
-                          focusRingColor: '#ecd2b4'
+                          border: '1px solid rgba(236, 210, 180, 0.3)'
                         }}
                         placeholder="Ingrese el año"
                       />
@@ -580,8 +578,7 @@ export default function EditCTPSFSPage() {
                         style={{ 
                           backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                           color: '#ecd2b4',
-                          border: '1px solid rgba(236, 210, 180, 0.3)',
-                          focusRingColor: '#ecd2b4'
+                          border: '1px solid rgba(236, 210, 180, 0.3)'
                         }}
                       >
                         <option value="">Seleccione un chaku</option>
@@ -607,11 +604,10 @@ export default function EditCTPSFSPage() {
                         rows={3}
                         className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200"
                         style={{ 
-                          backgroundColor: 'rgba(236, 210, 180, 0.1)', 
-                          color: '#ecd2b4',
-                          border: '1px solid rgba(236, 210, 180, 0.3)',
-                          focusRingColor: '#ecd2b4'
-                        }}
+                           backgroundColor: 'rgba(236, 210, 180, 0.1)', 
+                           color: '#ecd2b4',
+                           border: '1px solid rgba(236, 210, 180, 0.3)'
+                         }}
                         placeholder="Ingrese la descripción del producto"
                       />
                       {formErrors.descripcion_producto && <p className="text-red-400 text-sm mt-1">{formErrors.descripcion_producto}</p>}
@@ -631,11 +627,10 @@ export default function EditCTPSFSPage() {
                         rows={3}
                         className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200"
                         style={{ 
-                          backgroundColor: 'rgba(236, 210, 180, 0.1)', 
-                          color: '#ecd2b4',
-                          border: '1px solid rgba(236, 210, 180, 0.3)',
-                          focusRingColor: '#ecd2b4'
-                        }}
+                           backgroundColor: 'rgba(236, 210, 180, 0.1)', 
+                           color: '#ecd2b4',
+                           border: '1px solid rgba(236, 210, 180, 0.3)'
+                         }}
                         placeholder="Ingrese la documentación de origen"
                       />
                       {formErrors.documentacion_origen && <p className="text-red-400 text-sm mt-1">{formErrors.documentacion_origen}</p>}
@@ -691,8 +686,7 @@ export default function EditCTPSFSPage() {
                             style={{ 
                               backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                               color: '#ecd2b4',
-                              border: '1px solid rgba(236, 210, 180, 0.3)',
-                              focusRingColor: '#ecd2b4'
+                              border: '1px solid rgba(236, 210, 180, 0.3)'
                             }}
                             placeholder="Descripción del producto transformado"
                           />
@@ -717,8 +711,7 @@ export default function EditCTPSFSPage() {
                             style={{ 
                               backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                               color: '#ecd2b4',
-                              border: '1px solid rgba(236, 210, 180, 0.3)',
-                              focusRingColor: '#ecd2b4'
+                              border: '1px solid rgba(236, 210, 180, 0.3)'
                             }}
                             placeholder="0.00"
                           />
@@ -740,8 +733,7 @@ export default function EditCTPSFSPage() {
                             style={{ 
                               backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                               color: '#ecd2b4',
-                              border: '1px solid rgba(236, 210, 180, 0.3)',
-                              focusRingColor: '#ecd2b4'
+                              border: '1px solid rgba(236, 210, 180, 0.3)'
                             }}
                           >
                             <option value="Kg" style={{ backgroundColor: '#0f324b', color: '#ecd2b4' }}>Kg</option>
@@ -763,8 +755,7 @@ export default function EditCTPSFSPage() {
                             style={{ 
                               backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                               color: '#ecd2b4',
-                              border: '1px solid rgba(236, 210, 180, 0.3)',
-                              focusRingColor: '#ecd2b4'
+                              border: '1px solid rgba(236, 210, 180, 0.3)'
                             }}
                           >
                             <option value="" style={{ backgroundColor: '#0f324b', color: '#ecd2b4' }}>Seleccione un artesano</option>
@@ -793,8 +784,7 @@ export default function EditCTPSFSPage() {
                             style={{ 
                               backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                               color: '#ecd2b4',
-                              border: '1px solid rgba(236, 210, 180, 0.3)',
-                              focusRingColor: '#ecd2b4'
+                              border: '1px solid rgba(236, 210, 180, 0.3)'
                             }}
                           />
                           {formErrors[`proceso_${index}_fecha_certificacion`] && (
@@ -816,8 +806,7 @@ export default function EditCTPSFSPage() {
                             style={{ 
                               backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                               color: '#ecd2b4',
-                              border: '1px solid rgba(236, 210, 180, 0.3)',
-                              focusRingColor: '#ecd2b4'
+                              border: '1px solid rgba(236, 210, 180, 0.3)'
                             }}
                             placeholder="Documentación de tenencia"
                           />

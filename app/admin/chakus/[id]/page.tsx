@@ -349,18 +349,6 @@ export default function ChakuDetailPage() {
             </div>
           </div>
 
-          {/* Descripción (si existe) */}
-          {chaku?.descripcion && (
-            <div className="mt-6">
-              <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>
-                Descripción
-              </label>
-              <p className="text-white bg-gray-700 px-3 py-2 rounded-lg min-h-[80px]">
-                {chaku.descripcion}
-              </p>
-            </div>
-          )}
-
           {/* Botones de acción */}
           <div className="mt-8 flex justify-end space-x-4">
             <button

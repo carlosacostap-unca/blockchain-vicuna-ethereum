@@ -320,9 +320,9 @@ export default function COLTDetailPage() {
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>Artesano</label>
                     <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
-                      {colt.artesanos ? `${colt.artesanos.apellidos}, ${colt.artesanos.nombres}` : 'No asignado'}
-                      {colt.artesanos?.dni && (
-                        <div className="text-sm opacity-80 mt-1">DNI: {colt.artesanos.dni}</div>
+                      {colt.artesano ? `${colt.artesano.apellidos}, ${colt.artesano.nombres}` : 'No asignado'}
+                      {colt.artesano?.dni && (
+                        <div className="text-sm opacity-80 mt-1">DNI: {colt.artesano.dni}</div>
                       )}
                     </div>
                   </div>
@@ -368,11 +368,11 @@ export default function COLTDetailPage() {
                     </div>
                   </div>
 
-                  {colt.chakus && (
+                  {colt.chaku && (
                     <div>
                       <label className="block text-sm font-medium mb-2" style={{ color: '#ecd2b4' }}>Chaku</label>
                       <div className="px-4 py-3 rounded-lg" style={{ backgroundColor: 'rgba(236, 210, 180, 0.1)', color: '#ecd2b4' }}>
-                        {colt.chakus.nombre}
+                        {colt.chaku.nombre}
                       </div>
                     </div>
                   )}

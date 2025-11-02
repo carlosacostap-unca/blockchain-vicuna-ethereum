@@ -116,7 +116,7 @@ export default function AdminArtesanosPage() {
           console.log('🔄 [ARTESANOS] Cargando cooperativas asociadas...')
           const { data: cooperativas, error: cooperativasError } = await supabase
             .from('cooperativas')
-            .select('id, nombre')
+            .select('id, nombre, comunidad')
             .in('id', cooperativaIds)
           
           if (!cooperativasError && cooperativas) {
@@ -126,7 +126,7 @@ export default function AdminArtesanosPage() {
             // Agregar información de cooperativa a cada artesano
             const artesanosWithCooperativas = data.map(artesano => ({
               ...artesano,
-              cooperativa: artesano.cooperativa_id ? cooperativasMap.get(artesano.cooperativa_id) : null
+              cooperativa: artesano.cooperativa_id ? cooperativasMap.get(artesano.cooperativa_id) : undefined
             }))
             
             console.log('✅ [ARTESANOS] Cooperativas cargadas exitosamente')

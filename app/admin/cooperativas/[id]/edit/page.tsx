@@ -346,8 +346,7 @@ export default function EditCooperativaPage() {
                       style={{ 
                         backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                         color: '#ecd2b4',
-                        border: '1px solid rgba(236, 210, 180, 0.3)',
-                        focusRingColor: '#ecd2b4'
+                        border: '1px solid rgba(236, 210, 180, 0.3)'
                       }}
                       placeholder="Ingrese el nombre de la cooperativa"
                     />
@@ -369,8 +368,7 @@ export default function EditCooperativaPage() {
                       style={{ 
                         backgroundColor: 'rgba(236, 210, 180, 0.1)', 
                         color: '#ecd2b4',
-                        border: '1px solid rgba(236, 210, 180, 0.3)',
-                        focusRingColor: '#ecd2b4'
+                        border: '1px solid rgba(236, 210, 180, 0.3)'
                       }}
                       placeholder="Ingrese la comunidad"
                     />

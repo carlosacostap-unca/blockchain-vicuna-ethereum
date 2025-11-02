@@ -438,7 +438,7 @@ export default function NewCTPSFSPage() {
                     <option value="">Seleccionar chaku (opcional)</option>
                     {chakus.map((chaku) => (
                       <option key={chaku.id} value={chaku.id}>
-                        {chaku.nombre} - {chaku.ubicacion}
+                        {chaku.nombre}
                       </option>
                     ))}
                   </select>
