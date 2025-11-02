@@ -139,6 +139,48 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                  {isMenuOpen && (
                    <div className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg z-50" style={{ backgroundColor: '#0f324b' }}>
                      <div className="py-2">
+                       {/* Opciones de navegación principales */}
+                       <button
+                         onClick={() => {
+                           router.push('/')
+                           setIsMenuOpen(false)
+                         }}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         INICIO
+                       </button>
+                       <button
+                         onClick={() => {
+                           router.push('/catalogo')
+                           setIsMenuOpen(false)
+                         }}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         CATÁLOGO
+                       </button>
+                       <button
+                         onClick={() => {
+                           router.push('/productos')
+                           setIsMenuOpen(false)
+                         }}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         PRODUCTOS
+                       </button>
+                       <button
+                         onClick={() => {
+                           router.push('/enlaces')
+                           setIsMenuOpen(false)
+                         }}
+                         className="w-full text-left px-4 py-2 text-sm hover:opacity-80 transition-opacity duration-200 border-b border-gray-600"
+                         style={{ color: '#ecd2b4' }}
+                       >
+                         ENLACES
+                       </button>
+                       
                        {user && profile ? (
                          // Usuario autenticado
                          <>
