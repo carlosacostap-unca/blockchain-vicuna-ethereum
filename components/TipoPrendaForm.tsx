@@ -53,9 +53,10 @@ export default function TipoPrendaForm({ tipoPrenda, onSuccess, onCancel }: Tipo
       }
 
       onSuccess()
-    } catch (error: any) {
-      console.error('Error al guardar tipo de prenda:', error)
-      setError(error.message || 'Error al guardar el tipo de prenda')
+    } catch (error: unknown) {
+      const e = error instanceof Error ? error : new Error(String(error))
+      console.error('Error al guardar tipo de prenda:', e)
+      setError(e.message || 'Error al guardar el tipo de prenda')
     } finally {
       setLoading(false)
     }

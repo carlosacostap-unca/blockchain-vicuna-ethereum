@@ -34,9 +34,10 @@ export default function TipoPrendasList() {
 
       if (error) throw error
       setTiposPrendas(data || [])
-    } catch (error: any) {
-      console.error('Error al cargar tipos de prendas:', error)
-      setError(error.message)
+    } catch (error: unknown) {
+      const e = error instanceof Error ? error : new Error(String(error))
+      console.error('Error al cargar tipos de prendas:', e)
+      setError(e.message)
     } finally {
       setLoading(false)
     }
@@ -72,9 +73,10 @@ export default function TipoPrendasList() {
 
       setTiposPrendas(prev => prev.filter(tp => tp.id !== id))
       setDeleteConfirm(null)
-    } catch (error: any) {
-      console.error('Error al eliminar tipo de prenda:', error)
-      alert('Error al eliminar el tipo de prenda: ' + error.message)
+    } catch (error: unknown) {
+      const e = error instanceof Error ? error : new Error(String(error))
+      console.error('Error al eliminar tipo de prenda:', e)
+      alert('Error al eliminar el tipo de prenda: ' + e.message)
     }
   }
 

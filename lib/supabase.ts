@@ -187,10 +187,10 @@ export interface UserProfileWithRelations extends UserProfile {
 
 // Tipo para el contexto de autenticación
 export interface AuthContextType {
-  user: any | null
+  user: unknown | null
   profile: UserProfileWithRelations | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error?: any }>
+  signIn: (email: string, password: string) => Promise<{ error?: unknown }>
   signOut: () => Promise<void>
   hasRole: (roleName: UserRoleName) => boolean
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 
 // Dirección del contrato desplegado
@@ -66,11 +66,7 @@ export default function PublicNFTView({ tokenId }: PublicNFTViewProps) {
   const [copiedField, setCopiedField] = useState<string>('');
   const [loadingStatus, setLoadingStatus] = useState<string>('Iniciando conexión...');
 
-  useEffect(() => {
-    loadPublicNFTData();
-  }, [tokenId]);
-
-  const loadPublicNFTData = async () => {
+  const loadPublicNFTData = useCallback(async () => {
     if (!tokenId) {
       setError('Token ID no válido');
       setIsLoading(false);
@@ -117,9 +113,10 @@ export default function PublicNFTView({ tokenId }: PublicNFTViewProps) {
           console.log(`✅ Conectado exitosamente con: ${providerUrl}`);
           setLoadingStatus('Conexión establecida, obteniendo datos del NFT...');
           break;
-        } catch (err: any) {
-          console.warn(`❌ Proveedor ${providerUrl} falló:`, err.message);
-          lastError = err;
+        } catch (err: unknown) {
+          const e = err instanceof Error ? err : new Error(String(err));
+          console.warn(`❌ Proveedor ${providerUrl} falló:`, e.message);
+          lastError = e;
           provider = null;
           
           // Si no es el último proveedor, continuar intentando
@@ -160,9 +157,10 @@ export default function PublicNFTView({ tokenId }: PublicNFTViewProps) {
       };
 
       setNftData(nftInfo);
-    } catch (err: any) {
-      console.error('Error cargando información pública del NFT:', err);
-      if (err.message.includes('ERC721: invalid token ID') || err.message.includes('nonexistent token')) {
+    } catch (err: unknown) {
+      const e = err instanceof Error ? err : new Error(String(err));
+      console.error('Error cargando información pública del NFT:', e);
+      if (e.message.includes('ERC721: invalid token ID') || e.message.includes('nonexistent token')) {
         setError(`El NFT con Token ID ${tokenId} no existe.`);
       } else {
         setError('Error al cargar la información del NFT. Verifica que el Token ID sea correcto.');
@@ -170,7 +168,11 @@ export default function PublicNFTView({ tokenId }: PublicNFTViewProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [tokenId]);
+
+  useEffect(() => {
+    loadPublicNFTData();
+  }, [loadPublicNFTData]);
 
   const copyToClipboard = async (text: string, field: string) => {
     try {

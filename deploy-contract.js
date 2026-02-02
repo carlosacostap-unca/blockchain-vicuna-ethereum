@@ -1,5 +1,7 @@
-const { ethers } = require('ethers');
-const fs = require('fs');
+import { ethers } from 'ethers';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 // Configuración de la red Sepolia
 const SEPOLIA_RPC_URL = 'https://sepolia.infura.io/v3/YOUR_INFURA_PROJECT_ID'; // Reemplazar con tu Project ID
@@ -69,8 +71,12 @@ async function deployContract() {
   }
 }
 
-// Ejecutar si se llama directamente
-if (require.main === module) {
+// Ejecutar si se llama directamente (ESM)
+const isMain =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isMain) {
   deployContract()
     .then((address) => {
       console.log('🎉 Deployment completado. Nueva dirección:', address);
@@ -82,4 +88,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { deployContract };
+export { deployContract };

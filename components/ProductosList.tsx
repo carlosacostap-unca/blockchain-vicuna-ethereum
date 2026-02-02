@@ -11,6 +11,8 @@ interface ProductosListProps {
   refreshTrigger?: number
 }
 
+type SortKey = 'nombre' | 'artesano' | 'fecha' | 'tiempo'
+
 export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }: ProductosListProps) {
   const [productos, setProductos] = useState<ProductoWithRelations[]>([])
   const [filteredProductos, setFilteredProductos] = useState<ProductoWithRelations[]>([])
@@ -19,7 +21,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
   const [selectedArtesano, setSelectedArtesano] = useState('')
   const [selectedCTPSFS, setSelectedCTPSFS] = useState('')
   const [selectedLocalidad, setSelectedLocalidad] = useState('')
-  const [sortBy, setSortBy] = useState<'nombre' | 'artesano' | 'fecha' | 'tiempo'>('fecha')
+  const [sortBy, setSortBy] = useState<SortKey>('fecha')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedProduct, setSelectedProduct] = useState<ProductoWithRelations | null>(null)
@@ -313,7 +315,7 @@ export default function ProductosList({ onEdit, onNew, onView, refreshTrigger }:
               <label className="text-sm font-medium text-gray-700">Ordenar por:</label>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as SortKey)}
                 className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="fecha">Fecha</option>
