@@ -27,8 +27,8 @@ export default function COLTDetailPage() {
         .from('colt')
         .select(`
           *,
-          artesanos!artesano_id(*),
-          chakus!chaku_id(*)
+          artesano:artesanos!artesano_id(*),
+          chaku:chakus!chaku_id(*)
         `)
         .eq('id', coltId)
         .single()

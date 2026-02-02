@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { ProductoWithRelations } from '../lib/supabase'
+import { useEffect, useState } from 'react'
+import { supabase, ProductoWithRelations, CTPSFS, COLTWithRelations, Artesano, Chaku } from '../lib/supabase'
 
 interface ProductoDetalleProps {
   producto: ProductoWithRelations
@@ -12,6 +12,9 @@ interface ProductoDetalleProps {
 export default function ProductoDetalle({ producto, onBack, onEdit }: ProductoDetalleProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [showImageModal, setShowImageModal] = useState(false)
+  const [ctpsfsCompleto, setCtpsfsCompleto] = useState<CTPSFS | null>(null)
+  const [colt, setColt] = useState<COLTWithRelations | null>(null)
+  const [chaku, setChaku] = useState<Chaku | null>(null)
 
   const openImageModal = (imageIndex: number = 0) => {
     console.log('Opening modal with image index:', imageIndex);
@@ -55,6 +58,65 @@ export default function ProductoDetalle({ producto, onBack, onEdit }: ProductoDe
       minute: '2-digit'
     })
   }
+
+  useEffect(() => {
+    const loadCertificados = async () => {
+      try {
+        // CTPSFS completo y chaku
+        if (producto.ctpsfs?.id) {
+          const { data: cData } = await supabase
+            .from('ctpsfs')
+            .select('*')
+            .eq('id', producto.ctpsfs.id)
+            .single()
+          setCtpsfsCompleto(cData || null)
+
+          if (cData?.chaku_id) {
+            const { data: chData } = await supabase
+              .from('chakus')
+              .select('id,nombre')
+              .eq('id', cData.chaku_id)
+              .single()
+            setChaku(chData || null)
+          } else {
+            setChaku(null)
+          }
+        } else {
+          setCtpsfsCompleto(null)
+          setChaku(null)
+        }
+
+        // COLT asociado: por artesano y opcionalmente por chaku/año del CTPSFS
+        if (producto.artesano?.id) {
+          let query = supabase
+            .from('colt')
+            .select(`
+              *,
+              artesanos!artesano_id(*),
+              chaku:chakus!chaku_id(*)
+            `)
+            .eq('artesano_id', producto.artesano.id)
+
+          // Filtro por año del CTPSFS si está disponible
+          if (producto.ctpsfs?.ano) {
+            query = query.eq('ano', producto.ctpsfs.ano)
+          }
+
+          const { data: coltData } = await query
+            .order('fecha_expedicion', { ascending: false })
+            .limit(1)
+          setColt(coltData && coltData.length > 0 ? (coltData[0] as any) : null)
+        } else {
+          setColt(null)
+        }
+      } catch (e) {
+        console.error('Error cargando certificados del producto:', e)
+      }
+    }
+
+    loadCertificados()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [producto.id, producto.ctpsfs?.id, producto.artesano?.id])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -231,9 +293,108 @@ export default function ProductoDetalle({ producto, onBack, onEdit }: ProductoDe
                   <span className="font-medium text-gray-600">Año:</span>
                   <span className="text-gray-800">{producto.ctpsfs.ano}</span>
                 </div>
+                {ctpsfsCompleto?.descripcion_producto && (
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Producto:</span>
+                    <span className="text-gray-800">{ctpsfsCompleto.descripcion_producto}</span>
+                  </div>
+                )}
+                {chaku?.nombre && (
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Chaku:</span>
+                    <span className="text-gray-800">{chaku.nombre}</span>
+                  </div>
+                )}
+                {ctpsfsCompleto?.documentacion_origen && (
+                  <div>
+                    <span className="font-medium text-gray-600">Documentación de Origen:</span>
+                    <p className="text-gray-800 mt-1">{ctpsfsCompleto.documentacion_origen}</p>
+                  </div>
+                )}
+                {(ctpsfsCompleto?.created_at || ctpsfsCompleto?.updated_at) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {ctpsfsCompleto?.created_at && <span>Registrado: {formatDate(ctpsfsCompleto.created_at!)}</span>}
+                    {ctpsfsCompleto?.updated_at && ctpsfsCompleto?.updated_at !== ctpsfsCompleto?.created_at && (
+                      <span> • Actualizado: {formatDate(ctpsfsCompleto.updated_at!)}</span>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-gray-500 italic">No hay CTPSFS asociado</p>
+            )}
+          </div>
+
+          {/* Información del COLT */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">C.O.L.T.</h2>
+            {colt ? (
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Número:</span>
+                  <span className="text-gray-800">{colt.numero}</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Unidad:</span>
+                    <span className="text-gray-800">{colt.unidad}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Cantidad:</span>
+                    <span className="text-gray-800">{colt.cantidad}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Materia Prima:</span>
+                    <span className="text-gray-800">{colt.materia_prima}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Procedencia:</span>
+                    <span className="text-gray-800">{colt.lugar_procedencia}</span>
+                  </div>
+                </div>
+                {colt.chaku && (
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Chaku:</span>
+                    <span className="text-gray-800">{colt.chaku?.nombre}</span>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Año:</span>
+                    <span className="text-gray-800">{colt.ano}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600">Fecha Expedición:</span>
+                    <span className="text-gray-800">{formatDate(colt.fecha_expedicion)}</span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Destino:</span>
+                  <span className="text-gray-800">{colt.destino}</span>
+                </div>
+                {colt.descripcion && (
+                  <div>
+                    <span className="font-medium text-gray-600">Descripción:</span>
+                    <p className="text-gray-800 mt-1">{colt.descripcion}</p>
+                  </div>
+                )}
+                {colt.documentacion_origen && (
+                  <div>
+                    <span className="font-medium text-gray-600">Documentación de Origen:</span>
+                    <p className="text-gray-800 mt-1">{colt.documentacion_origen}</p>
+                  </div>
+                )}
+                {(colt.created_at || colt.updated_at) && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {colt.created_at && <span>Registrado: {formatDate(colt.created_at!)}</span>}
+                    {colt.updated_at && colt.updated_at !== colt.created_at && (
+                      <span> • Actualizado: {formatDate(colt.updated_at!)}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">No hay C.O.L.T. asociado</p>
             )}
           </div>
 

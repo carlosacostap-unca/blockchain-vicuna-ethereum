@@ -31,7 +31,31 @@ interface CTPSFS {
   id: number
   numero: string
   descripcion_producto: string
+  chaku_id?: number
   ano: number
+  documentacion_origen?: string
+  created_at?: string
+  updated_at?: string
+}
+
+interface COLT {
+  id: number
+  numero: string
+  artesano_id: number
+  unidad: 'Kg'
+  cantidad: number
+  materia_prima: 'Vicugna vicugna'
+  descripcion: string
+  lugar_procedencia: 'En silvestría' | 'Otro'
+  chaku_id?: number
+  ano: number
+  documentacion_origen: string
+  destino: 'Transformación' | 'Comercialización'
+  fecha_expedicion: string
+  created_at?: string
+  updated_at?: string
+  artesanos?: Artesano
+  chakus?: { id: number; nombre: string }
 }
 
 interface Producto {
@@ -64,6 +88,9 @@ export default function ProductoDetalle() {
   const [showImageModal, setShowImageModal] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [colt, setColt] = useState<COLT | null>(null)
+  const [chakuNombre, setChakuNombre] = useState<string | null>(null)
+  const formatDate = (s?: string) => (s ? new Date(s).toLocaleDateString('es-ES') : '')
 
   useEffect(() => {
     if (params.id) {
@@ -90,7 +117,7 @@ export default function ProductoDetalle() {
             cooperativa:cooperativas(id, nombre, comunidad)
           ),
           tipo_prenda:tipos_prendas(id, nombre, descripcion),
-          ctpsfs:ctpsfs(id, numero, descripcion_producto, ano)
+          ctpsfs:ctpsfs(id, numero, descripcion_producto, chaku_id, ano, documentacion_origen, created_at, updated_at)
         `)
         .eq('id', params.id)
         .single()
@@ -98,6 +125,42 @@ export default function ProductoDetalle() {
       if (error) throw error
 
       setProducto(data)
+
+      if (data?.ctpsfs?.chaku_id) {
+        const { data: chakuData } = await supabase
+          .from('chakus')
+          .select('id,nombre')
+          .eq('id', data.ctpsfs.chaku_id)
+          .single()
+        setChakuNombre(chakuData?.nombre || null)
+      } else {
+        setChakuNombre(null)
+      }
+
+      if (data?.artesano?.id) {
+        let query = supabase
+          .from('colt')
+          .select(`
+            *,
+            artesanos!artesano_id(*),
+            chakus!chaku_id(*)
+          `)
+          .eq('artesano_id', data.artesano.id)
+
+        if (data?.ctpsfs?.chaku_id) {
+          query = query.eq('chaku_id', data.ctpsfs.chaku_id)
+        }
+        if (data?.ctpsfs?.ano) {
+          query = query.eq('ano', data.ctpsfs.ano)
+        }
+
+        const { data: coltData } = await query
+          .order('fecha_expedicion', { ascending: false })
+          .limit(1)
+        setColt(coltData && coltData.length > 0 ? (coltData[0] as any) : null)
+      } else {
+        setColt(null)
+      }
     } catch (error) {
       console.error('Error fetching producto:', error)
       setError('Error al cargar el producto')
@@ -836,6 +899,124 @@ export default function ProductoDetalle() {
                   <p className="text-sm" style={{ color: '#ecd2b4' }}>
                     {producto.ctpsfs.descripcion_producto}
                   </p>
+                  {chakuNombre && (
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>
+                        Chaku: {chakuNombre}
+                      </p>
+                    </div>
+                  )}
+                  {producto.ctpsfs.documentacion_origen && (
+                    <div className="mt-2">
+                      <p className="text-sm opacity-75" style={{ color: '#ecd2b4' }}>Documentación de Origen</p>
+                      <p className="text-sm" style={{ color: '#ecd2b4' }}>{producto.ctpsfs.documentacion_origen}</p>
+                    </div>
+                  )}
+                  {(producto.ctpsfs.created_at || producto.ctpsfs.updated_at) && (
+                    <div className="mt-2 text-xs opacity-75" style={{ color: '#ecd2b4' }}>
+                      {producto.ctpsfs.created_at && <span>Registrado: {formatDate(producto.ctpsfs.created_at)}</span>}
+                      {producto.ctpsfs.updated_at && producto.ctpsfs.updated_at !== producto.ctpsfs.created_at && (
+                        <span> • Actualizado: {formatDate(producto.ctpsfs.updated_at)}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {colt && (
+              <div className="rounded-lg shadow-lg p-6" style={{ backgroundColor: '#0f324b' }}>
+                <h3 className="text-xl font-semibold mb-4" style={{ color: '#ecd2b4' }}>Certificado C.O.L.T.</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                    <p className="font-semibold" style={{ color: '#ecd2b4' }}>
+                      Número: {colt.numero}
+                    </p>
+                  </div>
+                  {colt.artesanos && (
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>
+                        Artesano: {colt.artesanos.apellidos}, {colt.artesanos.nombres}
+                      </p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zM3 8a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Unidad: {colt.unidad}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 3a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Cantidad: {colt.cantidad}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 8a3 3 0 016 0v6H5V8z" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Materia Prima: {colt.materia_prima}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9z" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Procedencia: {colt.lugar_procedencia}</p>
+                    </div>
+                  </div>
+                  {colt.chakus && (
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9z" clipRule="evenodd" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Chaku: {colt.chakus.nombre}</p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1z" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Año: {colt.ano}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#ecd2b4' }} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16z" />
+                      </svg>
+                      <p style={{ color: '#ecd2b4' }}>Fecha Expedición: {formatDate(colt.fecha_expedicion)}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-75" style={{ color: '#ecd2b4' }}>Destino</p>
+                    <p className="text-sm" style={{ color: '#ecd2b4' }}>{colt.destino}</p>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-sm opacity-75" style={{ color: '#ecd2b4' }}>Descripción</p>
+                    <p className="text-sm" style={{ color: '#ecd2b4' }}>{colt.descripcion}</p>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-sm opacity-75" style={{ color: '#ecd2b4' }}>Documentación de Origen</p>
+                    <p className="text-sm" style={{ color: '#ecd2b4' }}>{colt.documentacion_origen}</p>
+                  </div>
+                  {(colt.created_at || colt.updated_at) && (
+                    <div className="mt-2 text-xs opacity-75" style={{ color: '#ecd2b4' }}>
+                      {colt.created_at && <span>Registrado: {formatDate(colt.created_at)}</span>}
+                      {colt.updated_at && colt.updated_at !== colt.created_at && (
+                        <span> • Actualizado: {formatDate(colt.updated_at)}</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

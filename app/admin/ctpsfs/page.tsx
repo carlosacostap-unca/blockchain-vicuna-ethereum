@@ -29,6 +29,7 @@ export default function AdminCTPSFSPage() {
   const fetchCTPSFS = async () => {
     try {
       setLoadingCTPSFS(true)
+      setError(null)
       const { data, error } = await supabase
         .from('ctpsfs')
         .select('*')
@@ -36,8 +37,14 @@ export default function AdminCTPSFSPage() {
 
       if (error) throw error
       setCTPSFS(data || [])
-    } catch (error) {
-      console.error('Error fetching CTPSFS:', error)
+    } catch (error: any) {
+      const message = error?.message || 'Error al cargar certificados C.T.P.S.F.S.'
+      setError(message)
+      try {
+        console.error('Error fetching CTPSFS:', JSON.parse(JSON.stringify(error)))
+      } catch {
+        console.error('Error fetching CTPSFS:', error)
+      }
     } finally {
       setLoadingCTPSFS(false)
     }
